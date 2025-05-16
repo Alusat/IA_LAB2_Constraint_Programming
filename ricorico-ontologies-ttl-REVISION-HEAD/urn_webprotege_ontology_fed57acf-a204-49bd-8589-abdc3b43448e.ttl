@@ -64,7 +64,7 @@
                                                          rdfs:subPropertyOf owl:topObjectProperty ;
                                                          rdfs:domain <http://webprotege.stanford.edu/R9GmRSCon13uQKW1TKPJnjF> ,
                                                                      <http://webprotege.stanford.edu/R9V0EAtH0etjKRalQAfio8Q> ,
-                                                                     <http://webprotege.stanford.edu/RC1UP3dXwxUGko68HxWP6DT> ;
+                                                                     <http://webprotege.stanford.edu/RDDTlbTX5lhA8oX6LGPip6V> ;
                                                          rdfs:range <http://webprotege.stanford.edu/RDLwJS3CFXdv5huGDevv63m> ;
                                                          rdfs:label "Ingrediente_restricción"@es .
 
