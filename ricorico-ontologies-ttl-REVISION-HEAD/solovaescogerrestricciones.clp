@@ -264,6 +264,7 @@
 
 ;para cuando se tenga que preguntar de una lista de opciones
 (deffunction MAIN::preguntar_lista (?pregunta ?lista ?num)
+     (printout t ?lista crlf)
      (while TRUE do 
         (printout t " (Escoge las opciones que quieras, puedes no responder nada)" crlf)
         (loop-for-count (?i 1 (length$ $?lista)) do
@@ -336,7 +337,7 @@
 ;viendo los facts se puede ver lo que se ha guardado 
 ;en preferencas del cietne
 (defrule obtener_informacion::preguntar_restricciones
-    (declare (salience 2))
+    (declare (salience 70))
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setRestricciones)
     =>

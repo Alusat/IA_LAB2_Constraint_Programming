@@ -1,8 +1,7 @@
 ;;; ---------------------------------------------------------
-;;; prototipobasiquisimo.clp
+;;; Corrected prototipobasiquisimo.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology urn_webprotege_ontology_fed57acf-a204-49bd-8589-abdc3b43448e.ttl
-;;; :Date 15/05/2025 19:21:28
 
 (defclass Tipo_evento
     (is-a USER)
@@ -98,7 +97,6 @@
     (slot Posicion_menu
         (type INTEGER)
         (range 1 3)
-        (cardinality 1 1)
         (create-accessor read-write))
 )
 
@@ -129,6 +127,15 @@
         (create-accessor read-write))
     (slot Alcohol?
         (type SYMBOL)
+        (create-accessor read-write))
+)
+
+;clase extra para irse guardando los platos candidatos a estar en menú
+(defclass Plato_candidato
+    (is-a USER)
+    (role concrete)
+    (slot plato
+        (type INSTANCE)
         (create-accessor read-write))
 )
 
@@ -170,7 +177,7 @@
         (Precio 8)
         (Complejo? "false")
         (Caliente? "false")
-        (Posicion_menu 1 2)
+        (Posicion_menu 1)
     )
 
     ([Pollo] of Ingrediente
@@ -199,6 +206,12 @@
 
     ([Tomate] of Ingrediente
         (Disponible_durante [Verano] [Otoño])
+    )
+
+    ([Cebolla] of Ingrediente
+    )
+
+    ([Ajo] of Ingrediente
     )
 
     ([Coca_Cola] of Bebida
@@ -237,20 +250,7 @@
 
     ([Mediterraneo] of Estilo_comida
     )
-
-    
 )
-
-;clase extra para irse guardando los platos candidatos a estar en menú
-;hacer más adelante que tenga una puntuación y motivos por los que es/no adecuado
-(defclass Plato_candidato
-        (is-a USER)
-        (role concrete)
-        (slot plato 
-            (type INSTANCE)
-            (create-accessor read-write))
-)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; MODULO MAIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defmodule MAIN "main"
@@ -275,11 +275,33 @@
     (slot plato (type INSTANCE))
 )
 
+(deftemplate MAIN::bebida_considerada
+    (slot bebida (type INSTANCE))
+)
 
+(deftemplate MAIN::combinacionMenu
+    (slot primero (type INSTANCE))
+    (slot segundo (type INSTANCE))
+    (slot postre (type INSTANCE))
+)
+
+(deftemplate MAIN::combinacionMenuCompatible
+    (slot primero (type INSTANCE))
+    (slot segundo (type INSTANCE))
+    (slot postre (type INSTANCE))
+)
+
+(deftemplate MAIN::menuCorrecto
+    (slot primero (type INSTANCE))
+    (slot segundo (type INSTANCE))
+    (slot postre (type INSTANCE))
+    (slot bebida (type INSTANCE))
+)
 
 ;para cuando se tenga que preguntar de una lista de opciones
 (deffunction MAIN::preguntar_lista (?pregunta ?lista ?num)
-     (while TRUE do 
+     (while TRUE do
+        (printout t ?pregunta crlf)
         (printout t " (Escoge las opciones que quieras, puedes no responder nada)" crlf)
         (loop-for-count (?i 1 (length$ $?lista)) do
             (printout t "    " ?i "-" (nth$ ?i $?lista) crlf)
@@ -290,7 +312,7 @@
         (bind ?correct TRUE)
         (loop-for-count (?i 1 (length$ $?respuestas)) do
             (bind ?respuesta (nth$ ?i $?respuestas))
-            (if (not (and(>= ?respuesta 1)(<= ?respuesta (length$ $?lista)))) then 
+            (if (not (and(>= ?respuesta 1)(<= ?respuesta (length$ $?lista)))) then
                 (bind ?correct FALSE)
                 (printout t "El valor " ?respuesta " no es valido" crlf)
             else
@@ -303,13 +325,12 @@
     )
 )
 
-
 ;mensaje inicial, redirije a pillar datos
 (defrule MAIN::inicio "Regla con la que inicia el programa"
     (declare (salience 80)) ; mucho para que sea primero
-	=>
-	(printout t crlf "Responde las siguientes preguntas por favor:" crlf)
-	(focus obtener_informacion)
+        =>
+        (printout t crlf "Responde las siguientes preguntas por favor:" crlf)
+        (focus obtener_informacion)
 )
 
 (defmodule obtener_informacion "pregunta al cliente"
@@ -317,7 +338,7 @@
     (export ?ALL)
 )
 
-(defmodule tratar_informacion "cocina coosas con la informacion recibida"
+(defmodule tratar_informacion "cocina cosas con la informacion recibida"
     (import MAIN ?ALL)
     (import obtener_informacion deftemplate ?ALL)
     (export ?ALL)
@@ -329,27 +350,21 @@
     (export ?ALL)
 )
 
-(defmodule escribir_solucion "muestra el resultado"
+(defmodule mostrar_soluciones "muestra el resultado"
     (import MAIN ?ALL)
     (export ?ALL)
 )
 
-
 ;hechos iniciales que nos serviran para hacer las preguntas
 (deffacts MAIN::hechos-iniciales
     ;hacemos los facts necesarios para hacer las preguntas
-    (preferencias-del-cliente) 
+    (preferencias-del-cliente)
     (setRestricciones)
 )
 
 ;preguntamos en cuanto a las posibles restricciones
 ;se muestran todas las posibles y se almacena en el multislot
 ;restricciones de ingredientes los que se respondan
-
-;USO: responder nada, numero y si se quieren responder varios
-;se han de poner todos los numeros en la misma linea
-;viendo los facts se puede ver lo que se ha guardado 
-;en preferencas del cietne
 (defrule obtener_informacion::preguntar_restricciones
     (declare (salience 2))
     ?preferencias <- (preferencias-del-cliente)
@@ -358,12 +373,12 @@
         (bind $?nombre_todas_las_restricciones (create$))
         (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
 
-        (loop-for-count (?i 1 (length$ $?lista_todas_las_restricciones)) do 
+        (loop-for-count (?i 1 (length$ $?lista_todas_las_restricciones)) do
             (bind ?j (nth$ ?i $?lista_todas_las_restricciones))
-            (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)));el nombre no es un atributo en si, si no el nombre de la instancia
+            (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)))
             (bind $?nombre_todas_las_restricciones (insert$ $?nombre_todas_las_restricciones (+ (length$ $?nombre_todas_las_restricciones) 1) ?nombre_restriccion))
         )
-        (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones 0))
+        (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones 0))   
 
         (bind $?restricciones_escogidas (create$))
         (loop-for-count (?i 1 (length$ $?numero_restricciones_escogidas)) do
@@ -371,15 +386,15 @@
             (bind ?restriccion_escogida (nth$ ?j $?lista_todas_las_restricciones))
             (bind $?restricciones_escogidas (insert$ $?restricciones_escogidas (+ (length$ $?restricciones_escogidas) 1) ?restriccion_escogida))
         )
-        (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas));guardamos seleccion
+        (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas))
     (retract ?fact)
     (focus tratar_informacion)
-) 
+)
 
 (defrule tratar_informacion::podar_platos "Hace instancias de los platos que cumplen las preferencias del ciente"
     (preferencias-del-cliente (restriccionesDeIngredientes $?restriccionesDeIngredientes))
-    ?plato <-(object (is-a Plato))
-    (not (instancias_plato_hecha ?plato)) ;para que no vuelva a ejecutarse
+    ?plato <- (object (is-a Plato))
+    (not (instancias_plato_hecha (plato ?plato))) ;para que no vuelva a ejecutarse
         =>
     (bind ?cumple_condiciones TRUE)
 
@@ -390,7 +405,7 @@
         (bind $?restricciones_ingrediente (send ?ingrediente get-Ingrediente_restricción))
         ; Verificar si alguna restricción del ingrediente está en las restricciones del cliente
         (progn$ (?restriccion $?restricciones_ingrediente)
-            (if (member$ ?restriccion $?restriccionesDeIngredientes) then 
+            (if (member$ ?restriccion $?restriccionesDeIngredientes) then
                 (bind ?cumple_condiciones FALSE)
                 (break)
             )
@@ -398,11 +413,11 @@
         (if (eq ?cumple_condiciones FALSE) then (break))
     )
 
-    (if (eq ?cumple_condiciones TRUE) then 
+    (if (eq ?cumple_condiciones TRUE) then
         (make-instance (gensym) of Plato_candidato (plato ?plato))
     )
 
-    (assert (instancias_plato_hecha ?plato))
+    (assert (instancias_plato_hecha (plato ?plato)))
     (focus generar_menu)
 )
 
@@ -414,43 +429,32 @@
     (assert (posiblesBebidas (bebidas ?bebidas)))
 )
 
-;----------CAMBIAR A FUTURO PARA DESCARTE DE BEBIDAS !!! -------------------------------
-
-;----------CAMBIAR A FUTURO PARA DESCARTE DE BEBIDAS !!! -------------------------------
-
-;----------CAMBIAR A FUTURO PARA DESCARTE DE BEBIDAS !!! -------------------------------
-;aqui se tednrá que implementar el descartar o no bebidas alcoholicas
-;hacer evidentemtente previamente una pregunta que ponga un bool de alcohol a true/false
-;demomento pillamos todo
 (defrule generar_menu::crear_lista_bebidas "creamos lista con posibles bebidas"
     (declare (salience 15));retocar la prio cuando hayan mas cosas para que cuadre
     ?bebida_candidata <- (object (is-a Bebida)(Alcohol? ?esAlcholica))
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
-    (not (bebida_considerada ?bebida_candidata)) ;para no repetir
+    (not (bebida_considerada (bebida ?bebida_candidata))) ;para no repetir
     =>
     (bind $?bebidas (insert$ $?bebidas (+ (length$ $?bebidas) 1) ?bebida_candidata))
     (modify ?lista_bebidas_candidatas(bebidas $?bebidas))
-    (assert (bebida_considerada ?bebida_candidata))
+    (assert (bebida_considerada (bebida ?bebida_candidata)))
 )
 
 ;generamos las posibles combinaciones de platos y bebidas
-; (teneindo en cuenta su orden en el menú evidentemente)
 (defrule generar_menu::crear_combinaciones "Generamos las posibles combinaciones de platos y bebidas"
     (declare (salience 10));retocar la prio cuando hayan mas cosas para que cuadre
-    ?lista_bebidas_candidatas<- (posiblesBebidas (bebidas $?bebidas))
+    ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     =>
-    (bind $? platos (find-all-instances ((?inst Plato_candidato)) TRUE))
+    (bind $?platos (find-all-instances ((?inst Plato_candidato)) TRUE))
     (printout t "Tenemos " (length$ $?platos) " platos adecuados" crlf)
-    (printout t "Tenemos " (length$ $?bebidas) " bebidas adecuados" crlf)
-    (progn$ (?primero ?platos) 
+    (printout t "Tenemos " (length$ $?bebidas) " bebidas adecuadas" crlf)
+    (progn$ (?primero $?platos)
         (if (eq 1 (send (send ?primero get-plato) get-Posicion_menu)) then
-        ;LO DE LA POSICION MENÚ HARDCODEADO EN CLIPS ARRIBA,
-        ; SE TIENE QUE CAMBIAR EN PROTEGÉ ONLINE (CON EXACTAMENTE EL MISMO NOMBRE Y PROPIEDADES)
-            (progn$ (?segundo ?platos)
+            (progn$ (?segundo $?platos)
                 (if (eq 2 (send (send ?segundo get-plato) get-Posicion_menu)) then
-                    (progn$ (?postre ?platos)
+                    (progn$ (?postre $?platos)
                         (if (eq 3 (send (send ?postre get-plato) get-Posicion_menu)) then
-                            (assert (combinacionMenu ?primero ?segundo ?postre)) ;aun queda mirar compatibilidades entre platos
+                            (assert (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre)))
                         )
                     )
                 )
@@ -459,110 +463,87 @@
     )
 )
 
-;de las posibles combinaciones miramos INcompatibilidades entre platos
-;esto queda por imrar porque aun no tenemos definidas incompatibilidades 
-;en la ontología ni declaradas ni nada. Habria que añadirlo en el protegeonline
-;y lo de posición menú en los platos
 (defrule generar_menu::comprovar_incompatibilidades "Comprueba las incompatibilidades de los platos"
     (declare (salience 9))
-    ?fact <- (combinacionMenu ?primero ?segundo ?postre)
+    ?fact <- (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre))
     =>
-    ;para cada uno de los componentes del menú mirar si son incompatibles con alguno de los demás 
-    ;(deberia de estar instanciado both ways). como aun no tenemos nada instancia y ya
-    (assert (combinacionMenuCompatible ?primero ?segundo ?postre))
+    ;para cada uno de los componentes del menú mirar si son incompatibles con alguno de los demás
+    (assert (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre)))
     (retract ?fact);tanto si si como si no borramos la combinacion que acabamos de mirar
 )
 
-;tampoco tenemos nada que haga incompatibilidades entre bebidas y platos
-;tambien se tiene que hacer como compatibilidad entre plato-plato
-(defrule generar_menu::comprovar_bebidas "Para cada bebida mirarmos si es compatible con todos los elementos de un menú (compatible entre sí)"
+(defrule generar_menu::comprovar_bebidas "Para cada bebida miramos si es compatible con todos los elementos de un menú" 
     (declare (salience 8))
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
-    ?fact <- (combinacionMenuCompatible ?primero ?segundo ?postre)
+    ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre))
     =>
-    ;hacer toda la movida de comprovar la bebida con los platos...
-    (assert (menuCorrecto ?primero ?segundo ?postre ?bebida))
+    (progn$ (?bebida $?bebidas)
+        (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida)))
+    )
     (retract ?fact)
 )
 
-;finalmente miramos el precio, aún no esta hehco que se pregunte por un precio
-;al cliente así que tambien hace falta meter ese condicional
 (defrule generar_menu::comprovar_precio "Comprovamos que se cumpla la restriccion de precio"
     (declare (salience 7))
-    ;tmb poner el requisito de precion minmax pregutnado
-    ?fact <- (menuCorrecto ?primero ?segundo ?postre ?bebida)
+    ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida))
     =>
-    (bind ?precioTotal
-        (+ (send (send ?primero get-plato) get-Plato_precio)
-        (+ (send (send ?segundo get-plato) get-Plato_precio)
-        (+ (send (send ?postre get-plato) get-Plato_precio)
-        (send ?bebida get-Bebida_precio))))
-    )
-    ;habria que hacer la comprovacion de requisito de precio
-    ;-----------------------cambiar en la ontologia que menu que los platos (1o segundo bebida postre) sean multislot a SINGLESLOT (obvio en vrd) ---------------------
-    (make-instance (gensym) of Menu (Primero ?primero) (Segundo ?segundo) (Postre ?postre) (Precio ?precioTotal))
+    (bind ?precio_primero (send (send ?primero get-plato) get-Precio))
+    (bind ?precio_segundo (send (send ?segundo get-plato) get-Precio))
+    (bind ?precio_postre (send (send ?postre get-plato) get-Precio))
+    (bind ?precio_bebida (send ?bebida get-Precio))
     
-    ;------------------------------------------------ AUN QUEDA ESCOGER SOLO 3 -------------------------------------------------------
-    ;podriamos ya luego ordenar segun precio y sacar el primero, ultimo y mitad para tener 3 con precios variados dentro del presupuesto
-    ;(cuando comprovemos el precio porque por ahora nada xdd)
+    (bind ?precioTotal (+ ?precio_primero (+ ?precio_segundo (+ ?precio_postre ?precio_bebida))))
+    
+    (make-instance (gensym) of Menu 
+        (Primero (send ?primero get-plato))
+        (Segundo (send ?segundo get-plato))
+        (Postre (send ?postre get-plato))
+        (Precio ?precioTotal))
 
     (retract ?fact)
 )
 
 (defrule generar_menu::finalizar "Hemos acabado, cambiamos a modulo mostrar menus"
     (declare (salience 1)) ;lo ultimo que se hace
-    ;quizas poner algun tipoi de comprovación de que se hayan hecho
     =>
     (focus mostrar_soluciones)
 )
 
-(defrule escribir_solucion::imprimir_menus "Imprime las soluciones encontradas"
+(defrule mostrar_soluciones::imprimir_menus "Imprime las soluciones encontradas"
     =>
     (printout t "Los menus resultantes son los siguientes:" crlf)
-    
-    ; Obtener todas las instancias de Menu
+
     (bind $?todos_los_menus (find-all-instances ((?menu Menu)) TRUE))
-    
+
     (loop-for-count (?i 1 (length$ $?todos_los_menus)) do
         (bind ?menu_actual (nth$ ?i $?todos_los_menus))
-        
-        ; Obtener los platos candidatos del menú
+
         (bind $?primeros (send ?menu_actual get-Primero))
         (bind $?segundos (send ?menu_actual get-Segundo))
         (bind $?postres (send ?menu_actual get-Postre))
         (bind ?precio (send ?menu_actual get-Precio))
-        
-        ; Imprimir información del menú
+
         (printout t crlf "--- MENU " ?i " ---" crlf)
-        
-        ; Imprimir primero (si existe)
+
         (if (> (length$ $?primeros) 0) then
-            (bind ?primero_candidato (nth$ 1 $?primeros))
-            (bind ?plato_primero (send ?primero_candidato get-plato))
+            (bind ?plato_primero (nth$ 1 $?primeros))
             (printout t "Primero: " (instance-name ?plato_primero) crlf)
         )
-        
-        ; Imprimir segundo (si existe)
+
         (if (> (length$ $?segundos) 0) then
-            (bind ?segundo_candidato (nth$ 1 $?segundos))
-            (bind ?plato_segundo (send ?segundo_candidato get-plato))
+            (bind ?plato_segundo (nth$ 1 $?segundos))
             (printout t "Segundo: " (instance-name ?plato_segundo) crlf)
         )
-        
-        ; Imprimir postre (si existe)
+
         (if (> (length$ $?postres) 0) then
-            (bind ?postre_candidato (nth$ 1 $?postres))
-            (bind ?plato_postre (send ?postre_candidato get-plato))
+            (bind ?plato_postre (nth$ 1 $?postres))
             (printout t "Postre: " (instance-name ?plato_postre) crlf)
         )
-        
-        ; Imprimir precio
+
         (printout t "Precio: " ?precio " euros" crlf)
         (printout t "-------------------" crlf)
     )
 )
 
-
-;automatiza la ejecucion, se puede quitar obviamente
 (reset)
 (run)
