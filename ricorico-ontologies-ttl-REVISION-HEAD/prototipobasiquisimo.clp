@@ -41,7 +41,7 @@
         (type INSTANCE)
         (create-accessor read-write))
     (slot Precio
-        (type SYMBOL)
+        (type INTEGER)
         (create-accessor read-write))
 )
 
@@ -86,7 +86,7 @@
         (type INSTANCE)
         (create-accessor read-write))
     (slot Precio
-        (type SYMBOL)
+        (type INTEGER)
         (create-accessor read-write))
     (slot Complejo?
         (type SYMBOL)
@@ -123,7 +123,7 @@
     (role concrete)
     (pattern-match reactive)
     (slot Precio
-        (type SYMBOL)
+        (type INTEGER)
         (create-accessor read-write))
     (slot Alcohol?
         (type SYMBOL)
@@ -156,12 +156,6 @@
          (Posicion_menu 3)
     )
 
-    ([Menu_manicomio] of Menu
-         (Primero  [Macarrones_tomatico])
-         (Postre  [Yogurt_La_Fageda])
-         (Precio  7)
-    )
-
     ([Macarrones_tomatico] of Plato
          (Plato_ingrediente  [Carne])
          (Precio  5)
@@ -177,7 +171,7 @@
         (Precio 8)
         (Complejo? "false")
         (Caliente? "false")
-        (Posicion_menu 1)
+        (Posicion_menu 2)
     )
 
     ([Pollo] of Ingrediente
@@ -300,6 +294,7 @@
 
 ;para cuando se tenga que preguntar de una lista de opciones
 (deffunction MAIN::preguntar_lista (?pregunta ?lista ?num)
+     (printout t "PREGUNTANDO LISTA" crlf)
      (while TRUE do
         (printout t ?pregunta crlf)
         (printout t " (Escoge las opciones que quieras, puedes no responder nada)" crlf)
@@ -327,7 +322,7 @@
 
 ;mensaje inicial, redirije a pillar datos
 (defrule MAIN::inicio "Regla con la que inicia el programa"
-    (declare (salience 80)) ; mucho para que sea primero
+    (declare (salience 100)) ; mucho para que sea primero
         =>
         (printout t crlf "Responde las siguientes preguntas por favor:" crlf)
         (focus obtener_informacion)
@@ -370,6 +365,7 @@
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setRestricciones)
     =>
+     (printout t "PREGUNTANDO RESTRICCIONES" crlf)
         (bind $?nombre_todas_las_restricciones (create$))
         (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
 
@@ -388,14 +384,21 @@
         )
         (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas))
     (retract ?fact)
+)
+
+(defrule obtener_informacion::todas_las_preguntas_hechas "cambiamos de modulo"
+    (declare(salience -1))
+    =>
     (focus tratar_informacion)
 )
 
 (defrule tratar_informacion::podar_platos "Hace instancias de los platos que cumplen las preferencias del ciente"
+    (declare(salience 10))
     (preferencias-del-cliente (restriccionesDeIngredientes $?restriccionesDeIngredientes))
     ?plato <- (object (is-a Plato))
     (not (instancias_plato_hecha (plato ?plato))) ;para que no vuelva a ejecutarse
         =>
+    (printout t "PODANDO PLATOS" crlf)
     (bind ?cumple_condiciones TRUE)
 
     ; Obtener ingredientes del plato
@@ -418,6 +421,12 @@
     )
 
     (assert (instancias_plato_hecha (plato ?plato)))
+)
+
+(defrule tratar_informacion::informacion_tratada "ya hemos tratado la informacion. Cambiar  de modulo"
+    (declare (salience -1))
+    =>
+    (printout t "Hemos acabao de procesar datos" crlf)
     (focus generar_menu)
 )
 
@@ -435,6 +444,7 @@
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     (not (bebida_considerada (bebida ?bebida_candidata))) ;para no repetir
     =>
+    (printout t "Añadiendo bebida a lista..." crlf)
     (bind $?bebidas (insert$ $?bebidas (+ (length$ $?bebidas) 1) ?bebida_candidata))
     (modify ?lista_bebidas_candidatas(bebidas $?bebidas))
     (assert (bebida_considerada (bebida ?bebida_candidata)))
@@ -448,6 +458,7 @@
     (bind $?platos (find-all-instances ((?inst Plato_candidato)) TRUE))
     (printout t "Tenemos " (length$ $?platos) " platos adecuados" crlf)
     (printout t "Tenemos " (length$ $?bebidas) " bebidas adecuadas" crlf)
+    (printout t "Generando combinaciones adecuadas" crlf)
     (progn$ (?primero $?platos)
         (if (eq 1 (send (send ?primero get-plato) get-Posicion_menu)) then
             (progn$ (?segundo $?platos)
@@ -467,6 +478,7 @@
     (declare (salience 9))
     ?fact <- (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre))
     =>
+    (printout t "Comprovando incompatibilidades" crlf)
     ;para cada uno de los componentes del menú mirar si son incompatibles con alguno de los demás
     (assert (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre)))
     (retract ?fact);tanto si si como si no borramos la combinacion que acabamos de mirar
@@ -477,6 +489,7 @@
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre))
     =>
+        (printout t "Ahora comprovando bebidas" crlf)
     (progn$ (?bebida $?bebidas)
         (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida)))
     )
@@ -487,14 +500,18 @@
     (declare (salience 7))
     ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida))
     =>
+    (printout t "Comprovando precio" crlf)
     (bind ?precio_primero (send (send ?primero get-plato) get-Precio))
     (bind ?precio_segundo (send (send ?segundo get-plato) get-Precio))
     (bind ?precio_postre (send (send ?postre get-plato) get-Precio))
     (bind ?precio_bebida (send ?bebida get-Precio))
-    
+    (printout t "PRECIO PRIMERO ---------- ?precio_primero" crlf)
+
+
     (bind ?precioTotal (+ ?precio_primero (+ ?precio_segundo (+ ?precio_postre ?precio_bebida))))
     
     (make-instance (gensym) of Menu 
+        (Menu/plato_bebida ?bebida)
         (Primero (send ?primero get-plato))
         (Segundo (send ?segundo get-plato))
         (Postre (send ?postre get-plato))
@@ -504,7 +521,7 @@
 )
 
 (defrule generar_menu::finalizar "Hemos acabado, cambiamos a modulo mostrar menus"
-    (declare (salience 1)) ;lo ultimo que se hace
+    (declare (salience -1)) ;lo ultimo que se hace
     =>
     (focus mostrar_soluciones)
 )
@@ -518,12 +535,18 @@
     (loop-for-count (?i 1 (length$ $?todos_los_menus)) do
         (bind ?menu_actual (nth$ ?i $?todos_los_menus))
 
+        (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
         (bind $?primeros (send ?menu_actual get-Primero))
         (bind $?segundos (send ?menu_actual get-Segundo))
         (bind $?postres (send ?menu_actual get-Postre))
         (bind ?precio (send ?menu_actual get-Precio))
 
         (printout t crlf "--- MENU " ?i " ---" crlf)
+
+        (if (> (length$ $?bebidas) 0) then
+            (bind ?bebida_menu (nth$ 1 $?bebidas))
+            (printout t "Bebida: " (instance-name ?bebida_menu) crlf)
+        )
 
         (if (> (length$ $?primeros) 0) then
             (bind ?plato_primero (nth$ 1 $?primeros))
