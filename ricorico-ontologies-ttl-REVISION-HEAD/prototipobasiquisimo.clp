@@ -1,5 +1,4 @@
 ;;; ---------------------------------------------------------
-;;; Corrected prototipobasiquisimo.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology urn_webprotege_ontology_fed57acf-a204-49bd-8589-abdc3b43448e.ttl
 
@@ -141,7 +140,8 @@
 
 (definstances instances
     ([Agua] of Bebida
-         (Alcohol?  "true")
+         (Alcohol?  "false")
+         (Precio 1)
     )
 
     ([Carne] of Ingrediente
@@ -255,6 +255,7 @@
 ;se cambiaran segun las preguntas que le hagamos al cliente
 (deftemplate MAIN::preferencias-del-cliente
     (multislot restriccionesDeIngredientes (type INSTANCE));restrictivo en cuanto al menú
+    (slot bebidasAlcoholicas (type INTEGER) (default 1));1 significa que puede haber
 )
 
 (deftemplate MAIN::posiblesBebidas
@@ -293,7 +294,7 @@
 )
 
 ;para cuando se tenga que preguntar de una lista de opciones
-(deffunction MAIN::preguntar_lista (?pregunta ?lista ?num)
+(deffunction MAIN::preguntar_lista (?pregunta ?lista)
      (printout t "PREGUNTANDO LISTA" crlf)
      (while TRUE do
         (printout t ?pregunta crlf)
@@ -318,6 +319,11 @@
         )
         (if (eq ?correct TRUE) then (return $?numeros_escogidos))
     )
+)
+
+(deffunction MAIN::preguntar (?pregunta) "Pregunta de un unico valor"
+    (printout t crlf ?pregunta crlf)
+    (return (read))
 )
 
 ;mensaje inicial, redirije a pillar datos
@@ -355,13 +361,14 @@
     ;hacemos los facts necesarios para hacer las preguntas
     (preferencias-del-cliente)
     (setRestricciones)
+    (setBebidasAlcoholicas)
 )
 
 ;preguntamos en cuanto a las posibles restricciones
 ;se muestran todas las posibles y se almacena en el multislot
 ;restricciones de ingredientes los que se respondan
 (defrule obtener_informacion::preguntar_restricciones
-    (declare (salience 2))
+    (declare (salience 10))
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setRestricciones)
     =>
@@ -374,7 +381,7 @@
             (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)))
             (bind $?nombre_todas_las_restricciones (insert$ $?nombre_todas_las_restricciones (+ (length$ $?nombre_todas_las_restricciones) 1) ?nombre_restriccion))
         )
-        (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones 0))   
+        (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones))   
 
         (bind $?restricciones_escogidas (create$))
         (loop-for-count (?i 1 (length$ $?numero_restricciones_escogidas)) do
@@ -386,9 +393,44 @@
     (retract ?fact)
 )
 
+(defrule obtener_informacion::preguntar_alcohol "Pregunta sobre si se permite alcohol"
+    (declare (salience 9))
+    ?preferencias <- (preferencias-del-cliente)
+    ?fact <- (setBebidasAlcoholicas)
+    =>
+    (printout t "PREGUNTANDO ALCOHOL" crlf)
+    (bind ?finish FALSE)
+    (while (eq ?finish FALSE)
+        (bind ?respuesta (preguntar "Quieres bebidas alcoholicas en el evento? ||| No(0) ||| Si(1) |||"))
+        (switch ?respuesta
+            (case 0 then
+                (modify ?preferencias (bebidasAlcoholicas 0))
+                (bind ?finish TRUE)
+            )
+            (case 1 then
+                (modify ?preferencias (bebidasAlcoholicas 1))
+                (bind ?finish TRUE)
+            )
+            (default
+                (printout t "Opcion " ?respuesta " no valida. Introduce 0 o 1." crlf)
+            )
+        )
+    )
+    (retract ?fact)
+)
+
+(defrule obtener_informacion::debug_hechos
+    (declare (salience 5))
+    =>
+    (printout t "PARA DEBUGING " crlf)
+    (printout t "Hechos presentes:" crlf)
+    (facts)
+)
+
 (defrule obtener_informacion::todas_las_preguntas_hechas "cambiamos de modulo"
     (declare(salience -1))
     =>
+    (printout t "Todas las preguntas completadas, procesando información..." crlf)
     (focus tratar_informacion)
 )
 
@@ -443,10 +485,30 @@
     ?bebida_candidata <- (object (is-a Bebida)(Alcohol? ?esAlcholica))
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     (not (bebida_considerada (bebida ?bebida_candidata))) ;para no repetir
+    (preferencias-del-cliente (bebidasAlcoholicas ?permitir_alcohol))
     =>
-    (printout t "Añadiendo bebida a lista..." crlf)
-    (bind $?bebidas (insert$ $?bebidas (+ (length$ $?bebidas) 1) ?bebida_candidata))
-    (modify ?lista_bebidas_candidatas(bebidas $?bebidas))
+    (printout t "Evaluando bebida: " (instance-name ?bebida_candidata) " - Alcohol: " ?esAlcholica crlf)
+    
+    ; Verificar si la bebida es compatible con las preferencias de alcohol
+    (bind ?incluir_bebida FALSE)
+    (if (eq ?permitir_alcohol 1) then
+        ; Si se permiten bebidas alcohólicas, incluir todas
+        (bind ?incluir_bebida TRUE)
+    else
+        ; Si no se permiten bebidas alcohólicas, solo incluir las no alcohólicas
+        (if (eq ?esAlcholica "false") then
+            (bind ?incluir_bebida TRUE)
+        )
+    )
+    
+    (if (eq ?incluir_bebida TRUE) then
+        (printout t "Añadiendo bebida a lista..." crlf)
+        (bind $?bebidas (insert$ $?bebidas (+ (length$ $?bebidas) 1) ?bebida_candidata))
+        (modify ?lista_bebidas_candidatas(bebidas $?bebidas))
+    else
+        (printout t "Bebida excluida por restricciones de alcohol" crlf)
+    )
+    
     (assert (bebida_considerada (bebida ?bebida_candidata)))
 )
 
@@ -505,8 +567,7 @@
     (bind ?precio_segundo (send (send ?segundo get-plato) get-Precio))
     (bind ?precio_postre (send (send ?postre get-plato) get-Precio))
     (bind ?precio_bebida (send ?bebida get-Precio))
-    (printout t "PRECIO PRIMERO ---------- ?precio_primero" crlf)
-
+    (printout t "PRECIO PRIMERO ---------- " ?precio_primero crlf)
 
     (bind ?precioTotal (+ ?precio_primero (+ ?precio_segundo (+ ?precio_postre ?precio_bebida))))
     
