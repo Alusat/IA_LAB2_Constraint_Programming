@@ -256,6 +256,8 @@
 (deftemplate MAIN::preferencias-del-cliente
     (multislot restriccionesDeIngredientes (type INSTANCE));restrictivo en cuanto al menú
     (slot bebidasAlcoholicas (type INTEGER) (default 1));1 significa que puede haber
+    (slot precioMax (type INTEGER) (default 9999));ibai llanos
+    (slot precioMin (type INTEGER) (default 1))
 )
 
 (deftemplate MAIN::posiblesBebidas
@@ -362,6 +364,8 @@
     (preferencias-del-cliente)
     (setRestricciones)
     (setBebidasAlcoholicas)
+    (setMaxPrecio)
+    (setMinPrecio)
 )
 
 ;preguntamos en cuanto a las posibles restricciones
@@ -414,6 +418,48 @@
             (default
                 (printout t "Opcion " ?respuesta " no valida. Introduce 0 o 1." crlf)
             )
+        )
+    )
+    (retract ?fact)
+)
+
+(defrule obtener_informacion::preguntar_setMaxPrecio "Establece el maximo precio por menu del evento preguntandolo al usuario"
+    (declare (salience 8))
+    ?preferencias <- (preferencias-del-cliente)
+    ?fact <- (setMaxPrecio)
+    =>
+    (printout t "PREGUNTANDO PRECIO MÁXIMO" crlf)
+	(bind ?finish FALSE)
+	(while (eq ?finish FALSE)
+		(bind ?max (preguntar "Indica el maximo precio (euros) que estas dispuesto a pagar por menu"))
+		(if (and (numberp ?max) (>= ?max 1)) then
+			(modify ?preferencias (precioMax ?max))
+			(bind ?finish TRUE)
+		else
+			(printout t "El precio maximo debe ser un numero mayor o igual a 1" crlf)
+        )
+    )
+    (retract ?fact)
+)
+
+(defrule obtener_informacion::preguntar_setMinPrecio "Establece el minimo precio por menu del evento preguntandolo al usuario"
+    (declare (salience 7))
+    ?preferencias <- (preferencias-del-cliente (precioMax ?precioMax))
+    ?fact <- (setMinPrecio)
+    =>
+    (printout t "PREGUNTANDO PRECIO MÍNIMO" crlf)
+	(bind ?finish FALSE)
+	(while (eq ?finish FALSE)
+		(bind ?min (preguntar "Indica el minimo precio (euros) que estas dispuesto a pagar por menu"))
+		(if (and (numberp ?min) (>= ?min 1)) then
+			(if (> ?min ?precioMax) then
+				(printout t "El precio minimo ha de ser menor o igual al precio maximo escogido (" ?precioMax ")" crlf)
+			else 
+				(modify ?preferencias (precioMin ?min))
+				(bind ?finish TRUE)
+            )
+		else
+			(printout t "El precio minimo debe ser un numero mayor o igual a 1" crlf)
         )
     )
     (retract ?fact)
@@ -561,6 +607,7 @@
 (defrule generar_menu::comprovar_precio "Comprovamos que se cumpla la restriccion de precio"
     (declare (salience 7))
     ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida))
+    (preferencias-del-cliente (precioMin ?precioMin) (precioMax ?precioMax))
     =>
     (printout t "Comprovando precio" crlf)
     (bind ?precio_primero (send (send ?primero get-plato) get-Precio))
@@ -571,12 +618,18 @@
 
     (bind ?precioTotal (+ ?precio_primero (+ ?precio_segundo (+ ?precio_postre ?precio_bebida))))
     
-    (make-instance (gensym) of Menu 
-        (Menu/plato_bebida ?bebida)
-        (Primero (send ?primero get-plato))
-        (Segundo (send ?segundo get-plato))
-        (Postre (send ?postre get-plato))
-        (Precio ?precioTotal))
+    ; Verificar que el precio esté dentro del rango permitido
+    (if (and (>= ?precioTotal ?precioMin) (<= ?precioTotal ?precioMax)) then
+        (printout t "Menú dentro del rango de precio: " ?precioTotal " euros" crlf)
+        (make-instance (gensym) of Menu 
+            (Menu/plato_bebida ?bebida)
+            (Primero (send ?primero get-plato))
+            (Segundo (send ?segundo get-plato))
+            (Postre (send ?postre get-plato))
+            (Precio ?precioTotal))
+    else
+        (printout t "Menú fuera del rango de precio: " ?precioTotal " euros (rango: " ?precioMin "-" ?precioMax ")" crlf)
+    )
 
     (retract ?fact)
 )
