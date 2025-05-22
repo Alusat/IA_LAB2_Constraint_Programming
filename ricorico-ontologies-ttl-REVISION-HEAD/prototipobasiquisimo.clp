@@ -1,6 +1,6 @@
-;;; ---------------------------------------------------------
-;;; Translated by owl2clips
-;;; Translated to CLIPS from ontology urn_webprotege_ontology_fed57acf-a204-49bd-8589-abdc3b43448e.ttl
+;;;---------------------------------------------------------
+;;;Translated by owl2clips
+;;;Translated to CLIPS from ontology urn_webprotege_ontology_fed57acf-a204-49bd-8589-abdc3b43448e.ttl
 
 (defclass Tipo_evento
     (is-a USER)
@@ -244,7 +244,175 @@
 
     ([Mediterraneo] of Estilo_comida
     )
+
+    ;; Bebidas adicionales
+    ([Cerveza] of Bebida
+        (Alcohol? "true")
+        (Precio 4)
+    )
+    
+    ([Zumo_Naranja] of Bebida
+        (Alcohol? "false")
+        (Precio 3)
+    )
+    
+    ([Té] of Bebida
+        (Alcohol? "false")
+        (Precio 2)
+    )
+    
+    ([Sangria] of Bebida
+        (Alcohol? "true")
+        (Precio 8)
+    )
+
+    ;; Ingredientes adicionales
+    ([Pasta] of Ingrediente
+        (Ingrediente_restricción [Celiaco])
+    )
+    
+    ([Arroz] of Ingrediente
+    )
+    
+    ([Huevo] of Ingrediente
+        (Ingrediente_restricción [Vegano])
+    )
+    
+    ([Pescado] of Ingrediente
+        (Ingrediente_restricción [Vegetariano] [Vegano])
+    )
+    
+    ([Patata] of Ingrediente
+        (Disponible_durante [Invierno] [Otoño])
+    )
+    
+    ([Chocolate] of Ingrediente
+        (Ingrediente_restricción [Vegano]) ; Algunos chocolates contienen leche
+    )
+
+    ;; Platos principales adicionales
+    ([Paella] of Plato
+        (Plato_ingrediente [Arroz] [Pollo] [Pescado] [Tomate])
+        (Pais_de_procedencia [España])
+        (Es_de_estilo [Mediterraneo])
+        (Precio 12)
+        (Complejo? "true")
+        (Caliente? "true")
+        (Posicion_menu 2)
+    )
+    
+    ([Hamburguesa_Vegana] of Plato
+        (Plato_ingrediente [Lechuga] [Tomate] [Pan_tostado])
+        (Precio 9)
+        (Complejo? "false")
+        (Caliente? "true")
+        (Posicion_menu 2)
+    )
+    
+    ([Risotto] of Plato
+        (Plato_ingrediente [Arroz] [Queso_parmesano] [Cebolla])
+        (Pais_de_procedencia [Italia])
+        (Es_de_estilo [Italiano])
+        (Precio 10)
+        (Complejo? "true")
+        (Caliente? "true")
+        (Posicion_menu 2)
+    )
+
+    ;; Primeros platos adicionales
+    ([Crema_Calabacin] of Plato
+        (Plato_ingrediente [Calabacin] [Cebolla] [Ajo])
+        (Precio 7)
+        (Complejo? "false")
+        (Caliente? "true")
+        (Posicion_menu 1)
+    )
+    
+    ([Ensaladilla_Rusa] of Plato
+        (Plato_ingrediente [Patata] [Zanahoria] [Huevo] [Mayonesa])
+        (Precio 6)
+        (Complejo? "false")
+        (Caliente? "false")
+        (Posicion_menu 1)
+    )
+
+    ;; Postres adicionales
+    ([Tarta_Chocolate] of Plato
+        (Plato_ingrediente [Chocolate] [Huevo])
+        (Precio 5)
+        (Complejo? "true")
+        (Caliente? "false")
+        (Posicion_menu 3)
+    )
+    
+    ([Flan] of Plato
+        (Plato_ingrediente [Huevo] [Leche])
+        (Precio 4)
+        (Complejo? "false")
+        (Caliente? "false")
+        (Posicion_menu 3)
+    )
+    
+    ([Fruta_Fresca] of Plato
+        (Plato_ingrediente [Manzana] [Pera] [Platano])
+        (Precio 3)
+        (Complejo? "false")
+        (Caliente? "false")
+        (Posicion_menu 3)
+    )
+
+    ;; Nuevos países
+    ([España] of Paises
+    )
+    
+    ([Francia] of Paises
+    )
+
+    ;; Nuevos ingredientes
+    ([Calabacin] of Ingrediente
+        (Disponible_durante [Verano] [Otoño])
+    )
+    
+    ([Zanahoria] of Ingrediente
+    )
+    
+    ([Mayonesa] of Ingrediente
+        (Ingrediente_restricción [Vegano] [Huevo_alergia])
+    )
+    
+    ([Manzana] of Ingrediente
+        (Disponible_durante [Otoño] [Invierno])
+    )
+    
+    ([Pera] of Ingrediente
+        (Disponible_durante [Verano] [Otoño])
+    )
+    
+    ([Platano] of Ingrediente
+    )
+    
+    ([Leche] of Ingrediente
+        (Ingrediente_restricción [Vegano] [Lactosa_intolerante])
+    )
+
+    ;; Nuevas restricciones
+    ([Huevo_alergia] of Restricciones
+    )
+
+    ;; Nuevas estaciones
+    ([Invierno] of Estación
+    )
+
+    ;; Nuevos estilos
+    ([Italiano] of Estilo_comida
+    )
+    
+    ([Americano] of Estilo_comida
+    )
 )
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; MODULO MAIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defmodule MAIN "main"
@@ -330,7 +498,7 @@
 
 ;mensaje inicial, redirije a pillar datos
 (defrule MAIN::inicio "Regla con la que inicia el programa"
-    (declare (salience 100)) ; mucho para que sea primero
+    (declare (salience 100)) ;mucho para que sea primero
         =>
         (printout t crlf "Responde las siguientes preguntas por favor:" crlf)
         (focus obtener_informacion)
@@ -489,12 +657,12 @@
     (printout t "PODANDO PLATOS" crlf)
     (bind ?cumple_condiciones TRUE)
 
-    ; Obtener ingredientes del plato
+    ;Obtenemos ingrdientes
     (bind $?ingredientes_plato (send ?plato get-Plato_ingrediente))
-    ; Para cada ingrediente, verificar sus restricciones
+    ;Miramos las restricciones de cada uno
     (progn$ (?ingrediente $?ingredientes_plato)
         (bind $?restricciones_ingrediente (send ?ingrediente get-Ingrediente_restricción))
-        ; Verificar si alguna restricción del ingrediente está en las restricciones del cliente
+        ;Alguna esta prohibida por el cliente?
         (progn$ (?restriccion $?restricciones_ingrediente)
             (if (member$ ?restriccion $?restriccionesDeIngredientes) then
                 (bind ?cumple_condiciones FALSE)
@@ -535,13 +703,12 @@
     =>
     (printout t "Evaluando bebida: " (instance-name ?bebida_candidata) " - Alcohol: " ?esAlcholica crlf)
     
-    ; Verificar si la bebida es compatible con las preferencias de alcohol
     (bind ?incluir_bebida FALSE)
     (if (eq ?permitir_alcohol 1) then
-        ; Si se permiten bebidas alcohólicas, incluir todas
+        ;si se permiten bebidas con alcohol incluir todas
         (bind ?incluir_bebida TRUE)
     else
-        ; Si no se permiten bebidas alcohólicas, solo incluir las no alcohólicas
+        ;si no, solo incluir las no alcohólicas
         (if (eq ?esAlcholica "false") then
             (bind ?incluir_bebida TRUE)
         )
@@ -618,7 +785,7 @@
 
     (bind ?precioTotal (+ ?precio_primero (+ ?precio_segundo (+ ?precio_postre ?precio_bebida))))
     
-    ; Verificar que el precio esté dentro del rango permitido
+    ;mirar si entramos en presupuesto
     (if (and (>= ?precioTotal ?precioMin) (<= ?precioTotal ?precioMax)) then
         (printout t "Menú dentro del rango de precio: " ?precioTotal " euros" crlf)
         (make-instance (gensym) of Menu 
