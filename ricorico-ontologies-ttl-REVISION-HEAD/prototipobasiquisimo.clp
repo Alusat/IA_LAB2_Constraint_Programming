@@ -24,7 +24,7 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot Ingrediente_restricción
+    (multislot restricción_ingrediente
         (type INSTANCE)
         (create-accessor read-write))
     (multislot Menu/plato_bebida
@@ -51,7 +51,7 @@
     (multislot Es_evento_de_tipo
         (type INSTANCE)
         (create-accessor read-write))
-    (multislot Ingrediente_restricción
+    (multislot restricción_ingrediente
         (type INSTANCE)
         (create-accessor read-write))
     (multislot Ocurre_en_epoca
@@ -103,7 +103,7 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot Ingrediente_restricción
+    (multislot restricción_ingrediente
         (type INSTANCE)
         (create-accessor read-write))
     (multislot Disponible_durante
@@ -145,7 +145,7 @@
     )
 
     ([Carne] of Ingrediente
-         (Ingrediente_restricción  [Vegano] [Vegetariano])
+         (restricción_ingrediente  [Vegano] [Vegetariano])
     )
 
     ([Vegano] of Restricciones
@@ -175,7 +175,7 @@
     )
 
     ([Pollo] of Ingrediente
-        (Ingrediente_restricción [Vegetariano] [Vegano])
+        (restricción_ingrediente [Vegetariano] [Vegano])
     )
 
     ([Lechuga] of Ingrediente
@@ -183,11 +183,11 @@
     )
 
     ([Queso_parmesano] of Ingrediente
-        (Ingrediente_restricción [Vegano] [Lactosa_intolerante])
+        (restricción_ingrediente [Vegano] [Lactosa_intolerante])
     )
 
     ([Pan_tostado] of Ingrediente
-        (Ingrediente_restricción [Celiaco])
+        (restricción_ingrediente [Celiaco])
     )
 
     ([Sopa_de_tomate] of Plato
@@ -268,18 +268,18 @@
 
     ;; Ingredientes adicionales
     ([Pasta] of Ingrediente
-        (Ingrediente_restricción [Celiaco])
+        (restricción_ingrediente [Celiaco])
     )
     
     ([Arroz] of Ingrediente
     )
     
     ([Huevo] of Ingrediente
-        (Ingrediente_restricción [Vegano])
+        (restricción_ingrediente [Vegano])
     )
     
     ([Pescado] of Ingrediente
-        (Ingrediente_restricción [Vegetariano] [Vegano])
+        (restricción_ingrediente [Vegetariano] [Vegano])
     )
     
     ([Patata] of Ingrediente
@@ -287,7 +287,7 @@
     )
     
     ([Chocolate] of Ingrediente
-        (Ingrediente_restricción [Vegano]) ; Algunos chocolates contienen leche
+        (restricción_ingrediente [Vegano]) ; Algunos chocolates contienen leche
     )
 
     ;; Platos principales adicionales
@@ -377,7 +377,7 @@
     )
     
     ([Mayonesa] of Ingrediente
-        (Ingrediente_restricción [Vegano] [Huevo_alergia])
+        (restricción_ingrediente [Vegano] [Huevo_alergia])
     )
     
     ([Manzana] of Ingrediente
@@ -392,7 +392,7 @@
     )
     
     ([Leche] of Ingrediente
-        (Ingrediente_restricción [Vegano] [Lactosa_intolerante])
+        (restricción_ingrediente [Vegano] [Lactosa_intolerante])
     )
 
     ;; Nuevas restricciones
@@ -661,7 +661,7 @@
     (bind $?ingredientes_plato (send ?plato get-Plato_ingrediente))
     ;Miramos las restricciones de cada uno
     (progn$ (?ingrediente $?ingredientes_plato)
-        (bind $?restricciones_ingrediente (send ?ingrediente get-Ingrediente_restricción))
+        (bind $?restricciones_ingrediente (send ?ingrediente get-restricción_ingrediente))
         ;Alguna esta prohibida por el cliente?
         (progn$ (?restriccion $?restricciones_ingrediente)
             (if (member$ ?restriccion $?restriccionesDeIngredientes) then
