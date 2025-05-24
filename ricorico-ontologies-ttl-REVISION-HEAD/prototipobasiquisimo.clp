@@ -89,9 +89,11 @@
         (create-accessor read-write))
     (slot Complejo?
         (type SYMBOL)
+        (allowed-symbols TRUE FALSE)
         (create-accessor read-write))
     (slot Caliente?
         (type SYMBOL)
+        (allowed-symbols TRUE FALSE)
         (create-accessor read-write))
     (slot Posicion_menu
         (type INTEGER)
@@ -159,8 +161,8 @@
     ([Macarrones_tomatico] of Plato
          (Plato_ingrediente  [Carne])
          (Precio  5)
-         (Complejo? "false")
-         (Caliente? "true")
+         (Complejo? FALSE)
+         (Caliente? TRUE)
          (Posicion_menu 2)
     )
 
@@ -169,8 +171,8 @@
         (Pais_de_procedencia [Italia] [Estados_Unidos])
         (Es_de_estilo [Mediterraneo])
         (Precio 8)
-        (Complejo? "false")
-        (Caliente? "false")
+        (Complejo? FALSE)
+        (Caliente? FALSE)
         (Posicion_menu 2)
     )
 
@@ -193,8 +195,8 @@
     ([Sopa_de_tomate] of Plato
         (Plato_ingrediente [Tomate] [Cebolla] [Ajo])
         (Precio 6)
-        (Complejo? "false")
-        (Caliente? "true")
+        (Complejo? FALSE)
+        (Caliente? TRUE)
         (Posicion_menu 1)
     )
 
@@ -296,16 +298,16 @@
         (Pais_de_procedencia [España])
         (Es_de_estilo [Mediterraneo])
         (Precio 12)
-        (Complejo? "true")
-        (Caliente? "true")
+        (Complejo? TRUE)
+        (Caliente? TRUE)
         (Posicion_menu 2)
     )
     
     ([Hamburguesa_Vegana] of Plato
         (Plato_ingrediente [Lechuga] [Tomate] [Pan_tostado])
         (Precio 9)
-        (Complejo? "false")
-        (Caliente? "true")
+        (Complejo? FALSE)
+        (Caliente? TRUE)
         (Posicion_menu 2)
     )
     
@@ -314,8 +316,8 @@
         (Pais_de_procedencia [Italia])
         (Es_de_estilo [Italiano])
         (Precio 10)
-        (Complejo? "true")
-        (Caliente? "true")
+        (Complejo? TRUE)
+        (Caliente? TRUE)
         (Posicion_menu 2)
     )
 
@@ -323,16 +325,16 @@
     ([Crema_Calabacin] of Plato
         (Plato_ingrediente [Calabacin] [Cebolla] [Ajo])
         (Precio 7)
-        (Complejo? "false")
-        (Caliente? "true")
+        (Complejo? FALSE)
+        (Caliente? TRUE)
         (Posicion_menu 1)
     )
     
     ([Ensaladilla_Rusa] of Plato
         (Plato_ingrediente [Patata] [Zanahoria] [Huevo] [Mayonesa])
         (Precio 6)
-        (Complejo? "false")
-        (Caliente? "false")
+        (Complejo? FALSE)
+        (Caliente? FALSE)
         (Posicion_menu 1)
     )
 
@@ -340,24 +342,24 @@
     ([Tarta_Chocolate] of Plato
         (Plato_ingrediente [Chocolate] [Huevo])
         (Precio 5)
-        (Complejo? "true")
-        (Caliente? "false")
+        (Complejo? TRUE)
+        (Caliente? FALSE)
         (Posicion_menu 3)
     )
     
     ([Flan] of Plato
         (Plato_ingrediente [Huevo] [Leche])
         (Precio 4)
-        (Complejo? "false")
-        (Caliente? "false")
+        (Complejo? FALSE)
+        (Caliente? FALSE)
         (Posicion_menu 3)
     )
     
     ([Fruta_Fresca] of Plato
         (Plato_ingrediente [Manzana] [Pera] [Platano])
         (Precio 3)
-        (Complejo? "false")
-        (Caliente? "false")
+        (Complejo? FALSE)
+        (Caliente? FALSE)
         (Posicion_menu 3)
     )
 
@@ -424,6 +426,7 @@
 (deftemplate MAIN::preferencias-del-cliente
     (multislot restriccionesDeIngredientes (type INSTANCE));restrictivo en cuanto al menú
     (slot bebidasAlcoholicas (type INTEGER) (default 1));1 significa que puede haber
+    (slot numeroComensales (type INTEGER) (default 10)) ; numero comensales
     (slot precioMax (type INTEGER) (default 9999));ibai llanos
     (slot precioMin (type INTEGER) (default 1))
 )
@@ -530,8 +533,9 @@
 (deffacts MAIN::hechos-iniciales
     ;hacemos los facts necesarios para hacer las preguntas
     (preferencias-del-cliente)
-    (setRestricciones)
+    (setRestricciones) ; los sets estos son flags, para no ejecutar lo mismo una y otra vez
     (setBebidasAlcoholicas)
+    (setNumeroComensales)
     (setMaxPrecio)
     (setMinPrecio)
 )
@@ -540,7 +544,7 @@
 ;se muestran todas las posibles y se almacena en el multislot
 ;restricciones de ingredientes los que se respondan
 (defrule obtener_informacion::preguntar_restricciones
-    (declare (salience 10))
+    (declare (salience 15))
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setRestricciones)
     =>
@@ -565,34 +569,34 @@
     (retract ?fact)
 )
 
-(defrule obtener_informacion::preguntar_preferencias
-    (declare (salience 10))
-    ?preferencias <- (preferencias-del-cliente)
-    ?fact <- (setRestricciones)
-    =>
-     (printout t "PREGUNTANDO RESTRICCIONES" crlf)
-        (bind $?nombre_todas_las_restricciones (create$))
-        (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
+; (defrule obtener_informacion::preguntar_preferencias
+;     (declare (salience 10))
+;     ?preferencias <- (preferencias-del-cliente)
+;     ?fact <- (setRestricciones)
+;     =>
+;      (printout t "PREGUNTANDO RESTRICCIONES" crlf)
+;         (bind $?nombre_todas_las_restricciones (create$))
+;         (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
 
-        (loop-for-count (?i 1 (length$ $?lista_todas_las_restricciones)) do
-            (bind ?j (nth$ ?i $?lista_todas_las_restricciones))
-            (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)))
-            (bind $?nombre_todas_las_restricciones (insert$ $?nombre_todas_las_restricciones (+ (length$ $?nombre_todas_las_restricciones) 1) ?nombre_restriccion))
-        )
-        (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones))   
+;         (loop-for-count (?i 1 (length$ $?lista_todas_las_restricciones)) do
+;             (bind ?j (nth$ ?i $?lista_todas_las_restricciones))
+;             (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)))
+;             (bind $?nombre_todas_las_restricciones (insert$ $?nombre_todas_las_restricciones (+ (length$ $?nombre_todas_las_restricciones) 1) ?nombre_restriccion))
+;         )
+;         (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones))   
 
-        (bind $?restricciones_escogidas (create$))
-        (loop-for-count (?i 1 (length$ $?numero_restricciones_escogidas)) do
-            (bind ?j (nth$ ?i $?numero_restricciones_escogidas))
-            (bind ?restriccion_escogida (nth$ ?j $?lista_todas_las_restricciones))
-            (bind $?restricciones_escogidas (insert$ $?restricciones_escogidas (+ (length$ $?restricciones_escogidas) 1) ?restriccion_escogida))
-        )
-        (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas))
-    (retract ?fact)
-)
+;         (bind $?restricciones_escogidas (create$))
+;         (loop-for-count (?i 1 (length$ $?numero_restricciones_escogidas)) do
+;             (bind ?j (nth$ ?i $?numero_restricciones_escogidas))
+;             (bind ?restriccion_escogida (nth$ ?j $?lista_todas_las_restricciones))
+;             (bind $?restricciones_escogidas (insert$ $?restricciones_escogidas (+ (length$ $?restricciones_escogidas) 1) ?restriccion_escogida))
+;         )
+;         (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas))
+;     (retract ?fact)
+; )
 
 (defrule obtener_informacion::preguntar_alcohol "Pregunta sobre si se permite alcohol"
-    (declare (salience 9))
+    (declare (salience 12))
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setBebidasAlcoholicas)
     =>
@@ -612,6 +616,26 @@
             (default
                 (printout t "Opcion " ?respuesta " no valida. Introduce 0 o 1." crlf)
             )
+        )
+    )
+    (retract ?fact)
+)
+
+(defrule obtener_informacion::preguntar_numero_comensales "Pregunta sobre el numero aproximado de comensales"
+    (declare (salience 9))
+    ?preferencias <- (preferencias-del-cliente)
+    ?fact <- (setNumeroComensales)
+    =>
+    (printout t "PREGUNTANDO COMENSALES" crlf)
+    (bind ?finish FALSE)
+    (while (eq ?finish FALSE)
+        (bind ?respuesta (preguntar "¿Cuántos comensales asistiran al evento? Danos una cifra aproximada."))
+        (if (and (> ?respuesta 0) (integerp ?respuesta)) then
+            (modify ?preferencias (numeroComensales ?respuesta))
+            (bind ?finish TRUE)
+        else
+            (printout t crlf) ; salto de linea
+            (printout t "Cifra '" ?respuesta "' no válida. Introduce un entero estrictamente positivo. (Número sin decimales y mayor que zero, por ejemplo 10)" crlf)
         )
     )
     (retract ?fact)
@@ -674,17 +698,24 @@
     (focus tratar_informacion)
 )
 
-(defrule tratar_informacion::podar_platos "Hace instancias de los platos que cumplen las preferencias del ciente"
-    (declare(salience 10))
-    (preferencias-del-cliente (restriccionesDeIngredientes $?restriccionesDeIngredientes))
+(defrule tratar_informacion::podar_platos "Hace instancias de los platos que cumplen las preferencias del cliente"
+    (declare(salience 15))
+
+    (preferencias-del-cliente (restriccionesDeIngredientes $?restriccionesDeIngredientes) 
+                              (numeroComensales ?numeroComensales))
+
+    
+
     ?plato <- (object (is-a Plato))
     (not (instancias_plato_hecha (plato ?plato))) ;para que no vuelva a ejecutarse
         =>
     (printout t "PODANDO PLATOS" crlf)
+    (printout t "numero comensales " ?numeroComensales crlf)
     (bind ?cumple_condiciones TRUE)
 
     ;Obtenemos ingrdientes
     (bind $?ingredientes_plato (send ?plato get-Plato_ingrediente))
+
     ;Miramos las restricciones de cada uno
     (progn$ (?ingrediente $?ingredientes_plato)
         (bind $?restricciones_ingrediente (send ?ingrediente get-restricción_ingrediente))
@@ -696,6 +727,17 @@
             )
         )
         (if (eq ?cumple_condiciones FALSE) then (break))
+    )
+
+    ;Obtenemos complejidad
+    (bind ?esComplejo (send ?plato get-Complejo?))
+    (printout t "Plato " (instance-name ?plato) " es complejo? " ?esComplejo crlf)
+
+    (if (eq ?esComplejo TRUE) then
+        (if (> ?numeroComensales 40) then
+            (bind ?cumple_condiciones FALSE)
+            (printout t "Plato " (instance-name ?plato) " demasiado complejo " crlf)
+        )
     )
 
     (if (eq ?cumple_condiciones TRUE) then
@@ -713,7 +755,7 @@
 )
 
 (defrule generar_menu::inicializar "Inicializamos estructura para guardar el resultado"
-    (declare (salience 20)) ;retocar la prio cuando hayan mas cosas para que cuadre
+    (declare (salience 25)) ;retocar la prio cuando hayan mas cosas para que cuadre
     =>
     (printout t "Creando menus..." crlf)
     (bind ?bebidas (create$))
@@ -721,7 +763,7 @@
 )
 
 (defrule generar_menu::crear_lista_bebidas "creamos lista con posibles bebidas"
-    (declare (salience 15));retocar la prio cuando hayan mas cosas para que cuadre
+    (declare (salience 18));retocar la prio cuando hayan mas cosas para que cuadre
     ?bebida_candidata <- (object (is-a Bebida)(Alcohol? ?esAlcholica))
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     (not (bebida_considerada (bebida ?bebida_candidata))) ;para no repetir
@@ -753,7 +795,7 @@
 
 ;generamos las posibles combinaciones de platos y bebidas
 (defrule generar_menu::crear_combinaciones "Generamos las posibles combinaciones de platos y bebidas"
-    (declare (salience 10));retocar la prio cuando hayan mas cosas para que cuadre
+    (declare (salience 15));retocar la prio cuando hayan mas cosas para que cuadre
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     =>
     (bind $?platos (find-all-instances ((?inst Plato_candidato)) TRUE))
@@ -775,27 +817,28 @@
     )
 )
 
-(defrule generar_menu::comprovar_incompatibilidades "Comprueba las incompatibilidades de los platos"
-    (declare (salience 9))
+(defrule generar_menu::comprobar_incompatibilidades "Comprueba las incompatibilidades de los platos"
+    (declare (salience 12))
     ?fact <- (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre))
     =>
-    (printout t "Comprovando incompatibilidades" crlf)
+    (printout t "comprobando incompatibilidades" crlf)
     ;para cada uno de los componentes del menú mirar si son incompatibles con alguno de los demás
     (assert (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre)))
     (retract ?fact);tanto si si como si no borramos la combinacion que acabamos de mirar
 )
 
-(defrule generar_menu::comprovar_bebidas "Para cada bebida miramos si es compatible con todos los elementos de un menú" 
-    (declare (salience 8))
+(defrule generar_menu::comprobar_bebidas "Para cada bebida miramos si es compatible con todos los elementos de un menú" 
+    (declare (salience 10))
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre))
     =>
-        (printout t "Ahora comprovando bebidas" crlf)
+        (printout t "Ahora comprobando bebidas" crlf)
     (progn$ (?bebida $?bebidas)
         (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida)))
     )
     (retract ?fact)
 )
+
 
 (defrule generar_menu::comprobar_precio "Comprobamos que se cumpla la restriccion de precio"
     (declare (salience 7))
