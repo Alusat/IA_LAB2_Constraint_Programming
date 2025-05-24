@@ -1,0 +1,93 @@
+# Análisis de Salience en el código CLIPS
+
+1. Lista por orden de aparición en el código
+
+| Regla                          | Módulo              | Salience     | Línea aproximada |
+|-------------------------------|---------------------|--------------|------------------|
+| `inicio`                      | MAIN                | 100          | ~250             |
+| `preguntar_restricciones`     | obtener_informacion | 15           | ~285             |
+| `preguntar_alcohol`           | obtener_informacion | 12           | ~315             |
+| `preguntar_numero_comensales` | obtener_informacion | 9            | ~340             |
+| `preguntar_setMaxPrecio`      | obtener_informacion | 8            | ~360             |
+| `preguntar_setMinPrecio`      | obtener_informacion | 7            | ~380             |
+| `debug_hechos`                | obtener_informacion | 5            | ~405             |
+| `todas_las_preguntas_hechas`  | obtener_informacion | -1           | ~415             |
+| `podar_platos`                | tratar_informacion  | 15           | ~420             |
+| `informacion_tratada`         | tratar_informacion  | -1           | ~470             |
+| `inicializar`                 | generar_menu        | 25           | ~480             |
+| `crear_lista_bebidas`         | generar_menu        | 18           | ~490             |
+| `crear_combinaciones`         | generar_menu        | 15           | ~520             |
+| `comprobar_incompatibilidades`| generar_menu        | 12           | ~550             |
+| `comprobar_bebidas`           | generar_menu        | 10           | ~565             |
+| `comprobar_precio`            | generar_menu        | 7            | ~575             |
+| `finalizar`                   | generar_menu        | -1           | ~600             |
+| `imprimir_menus`              | mostrar_soluciones  | 0 (default)  | ~610             |
+
+
+2. Lista por orden de ejecución (según salience)
+
+Fase 1: MAIN (módulo inicial)
+
+| Orden | Regla     | Salience | Función                                               |
+|-------|-----------|----------|--------------------------------------------------------|
+| 1     | `inicio`  | 100      | Mensaje inicial y cambio a módulo obtener_informacion |
+
+Fase 2: obtener_informacion
+
+| Orden | Regla                         | Salience | Función                                |
+|-------|-------------------------------|----------|----------------------------------------|
+| 2     | `preguntar_restricciones`     | 15       | Pregunta restricciones alimentarias    |
+| 3     | `preguntar_alcohol`           | 12       | Pregunta sobre bebidas alcohólicas     |
+| 4     | `preguntar_numero_comensales` | 9        | Pregunta número de comensales          |
+| 5     | `preguntar_setMaxPrecio`      | 8        | Pregunta precio máximo                 |
+| 6     | `preguntar_setMinPrecio`      | 7        | Pregunta precio mínimo                 |
+| 7     | `debug_hechos`                | 5        | Muestra hechos para debugging          |
+| 8     | `todas_las_preguntas_hechas`  | -1       | Cambio a módulo tratar_informacion     |
+
+Fase 3: tratar_informacion
+
+| Orden | Regla                | Salience | Función                                               |
+|-------|----------------------|----------|--------------------------------------------------------|
+| 9     | `podar_platos`       | 15       | Filtra platos según restricciones y complejidad        |
+| 10    | `informacion_tratada`| -1       | Cambio a módulo generar_menu                          |
+
+Fase 4: generar_menu
+
+| Orden | Regla                          | Salience | Función                                       |
+|-------|--------------------------------|----------|-----------------------------------------------|
+| 11    | `inicializar`                  | 25       | Inicializa estructuras para el resultado     |
+| 12    | `crear_lista_bebidas`          | 18       | Crea lista de bebidas permitidas             |
+| 13    | `crear_combinaciones`          | 15       | Genera combinaciones de platos               |
+| 14    | `comprobar_incompatibilidades` | 12       | Verifica compatibilidad entre platos         |
+| 15    | `comprobar_bebidas`            | 10       | Asocia bebidas a menús compatibles           |
+| 16    | `comprobar_precio`             | 7        | Verifica que el precio esté en rango         |
+| 17    | `finalizar`                    | -1       | Cambio a módulo mostrar_soluciones           |
+
+Fase 5: mostrar_soluciones
+
+| Orden | Regla            | Salience     | Función                      |
+|-------|------------------|--------------|------------------------------|
+| 18    | `imprimir_menus` | 0 (default)  | Muestra los menús resultantes |
+
+
+3. Notas importantes sobre la ejecución
+
+- El programa usa `focus` para cambiar entre módulos secuencialmente.
+- Cada módulo se ejecuta completamente antes de pasar al siguiente.
+- Las reglas con salience -1 son las que cambian de módulo (actúan como "finalizadores").
+
+Patrones de salience utilizados:
+
+- 100: Inicio del programa
+- 25 : Inicialización de módulos
+- 15-18: Reglas principales de procesamiento
+- 7-12 : Reglas de validación y filtrado
+- 5    : Debugging
+- 0    : Reglas por defecto
+- -1   : Finalizadores de módulo
+
+Comportamiento especial:
+
+- La regla `podar_platos` se ejecuta múltiples veces (una por cada plato).
+- Las reglas de generación de menú pueden ejecutarse múltiples veces según las combinaciones posibles.
+- El sistema garantiza no repetir procesamiento mediante facts de control (`instancias_plato_hecha`, `bebida_considerada`).
