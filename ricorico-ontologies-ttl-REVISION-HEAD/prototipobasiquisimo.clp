@@ -425,6 +425,9 @@
 ;se cambiaran segun las preguntas que le hagamos al cliente
 (deftemplate MAIN::preferencias-del-cliente
     (multislot restriccionesDeIngredientes (type INSTANCE));restrictivo en cuanto al menú
+    (multislot estacion (type INSTANCE)) ;HAY QUE CAMBIARLO LUEGO!, CUANDO MODIFIQUE LA FUNCIÓN DE PREGUNTAR LISTA (PONER SLOT EN VEZ DE MULTI, DEJAR QUE EL USUARIO PONGA VARIAS ESTACIONES ES COMO RARO)
+    (multislot paises (type INSTANCE))
+    (multislot estilosComida (type INSTANCE))
     (slot bebidasAlcoholicas (type INTEGER) (default 1));1 significa que puede haber
     (slot numeroComensales (type INTEGER) (default 10)) ; numero comensales
     (slot precioMax (type INTEGER) (default 9999));ibai llanos
@@ -467,6 +470,7 @@
 )
 
 ;para cuando se tenga que preguntar de una lista de opciones
+;NOTA MÍA (SAMBHAV) TENDRÍA QUE AÑADIR PARÁMETRO DE ENTRADA QUE SEA UN BOOL PARA SABER SI DEBE DE HABER SOLO 1 O VARIOS PARÁMETROS DE ENTRADA
 (deffunction MAIN::preguntar_lista (?pregunta ?lista)
      (printout t "PREGUNTANDO LISTA" crlf)
      (while TRUE do
@@ -534,6 +538,9 @@
     ;hacemos los facts necesarios para hacer las preguntas
     (preferencias-del-cliente)
     (setRestricciones) ; los sets estos son flags, para no ejecutar lo mismo una y otra vez
+    (setEstacion)
+    (setPaises)
+    (setEstilosComida)
     (setBebidasAlcoholicas)
     (setNumeroComensales)
     (setMaxPrecio)
@@ -544,7 +551,7 @@
 ;se muestran todas las posibles y se almacena en el multislot
 ;restricciones de ingredientes los que se respondan
 (defrule obtener_informacion::preguntar_restricciones
-    (declare (salience 15))
+    (declare (salience 16))
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setRestricciones)
     =>
@@ -569,31 +576,82 @@
     (retract ?fact)
 )
 
-; (defrule obtener_informacion::preguntar_preferencias
-;     (declare (salience 10))
-;     ?preferencias <- (preferencias-del-cliente)
-;     ?fact <- (setRestricciones)
-;     =>
-;      (printout t "PREGUNTANDO RESTRICCIONES" crlf)
-;         (bind $?nombre_todas_las_restricciones (create$))
-;         (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
+(defrule obtener_informacion::preguntar_preferencias
+    (declare (salience 14))
+    ?preferencias <- (preferencias-del-cliente)
+    ?fact1 <- (setEstacion)
+    ?fact2 <- (setPaises)
+    ?fact3 <- (setEstilosComida)
+    =>
+     (printout t "PREGUNTANDO PREFERENCIAS" crlf)
 
-;         (loop-for-count (?i 1 (length$ $?lista_todas_las_restricciones)) do
-;             (bind ?j (nth$ ?i $?lista_todas_las_restricciones))
-;             (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)))
-;             (bind $?nombre_todas_las_restricciones (insert$ $?nombre_todas_las_restricciones (+ (length$ $?nombre_todas_las_restricciones) 1) ?nombre_restriccion))
-;         )
-;         (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones))   
+     ;PREGUNTAMOS ESTACIÓN
+        (bind $?nombre_todas_las_estaciones (create$))
+        (bind $?lista_todas_las_estaciones (find-all-instances ((?estacion Estación)) TRUE))
 
-;         (bind $?restricciones_escogidas (create$))
-;         (loop-for-count (?i 1 (length$ $?numero_restricciones_escogidas)) do
-;             (bind ?j (nth$ ?i $?numero_restricciones_escogidas))
-;             (bind ?restriccion_escogida (nth$ ?j $?lista_todas_las_restricciones))
-;             (bind $?restricciones_escogidas (insert$ $?restricciones_escogidas (+ (length$ $?restricciones_escogidas) 1) ?restriccion_escogida))
-;         )
-;         (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas))
-;     (retract ?fact)
-; )
+        (loop-for-count (?i 1 (length$ $?lista_todas_las_estaciones)) do
+            (bind ?j (nth$ ?i $?lista_todas_las_estaciones))
+            (bind ?nombre_estacion (instance-name-to-symbol (instance-name ?j)))
+            (bind $?nombre_todas_las_estaciones (insert$ $?nombre_todas_las_estaciones (+ (length$ $?nombre_todas_las_estaciones) 1) ?nombre_estacion))
+        )
+        (bind $?numero_estaciones_escogidas (preguntar_lista "Escoge la estacion en la que harás el evento" $?nombre_todas_las_estaciones))   
+
+        (bind $?estaciones_escogidas (create$))
+        (loop-for-count (?i 1 (length$ $?numero_estaciones_escogidas)) do
+            (bind ?j (nth$ ?i $?numero_estaciones_escogidas))
+            (bind ?estacion_escogida (nth$ ?j $?lista_todas_las_estaciones))
+            (bind $?estaciones_escogidas (insert$ $?estaciones_escogidas (+ (length$ $?estaciones_escogidas) 1) ?estacion_escogida))
+        )
+        (printout t "ESTACIONES ESCOGIDAS: " $?estaciones_escogidas crlf)
+        ;(modify ?preferencias (estacion $?estaciones_escogidas))
+
+    ;PREGUNTAMOS PAISES
+        (bind $?nombre_todos_los_paises (create$))
+        (bind $?lista_todos_los_paises (find-all-instances ((?pais Paises)) TRUE))
+
+        (loop-for-count (?i 1 (length$ $?lista_todos_los_paises)) do
+            (bind ?j (nth$ ?i $?lista_todos_los_paises))
+            (bind ?nombre_pais (instance-name-to-symbol (instance-name ?j)))
+            (bind $?nombre_todos_los_paises (insert$ $?nombre_todos_los_paises (+ (length$ $?nombre_todos_los_paises) 1) ?nombre_pais))
+        )
+        (bind $?numero_paises_escogidos (preguntar_lista "¿De qué paises quieres que sean típicos los platos?" $?nombre_todos_los_paises))   
+
+        (bind $?paises_escogidos (create$))
+        (loop-for-count (?i 1 (length$ $?numero_paises_escogidos)) do
+            (bind ?j (nth$ ?i $?numero_paises_escogidos))
+            (bind ?pais_escogido (nth$ ?j $?lista_todos_los_paises))
+            (bind $?paises_escogidos (insert$ $?paises_escogidos (+ (length$ $?paises_escogidos) 1) ?pais_escogido))
+        )
+        (printout t "PAISES ESCOGIDOS: " $?paises_escogidos crlf)
+        ;(modify ?preferencias (paises $?paises_escogidos))
+
+    ;PREGUNTAMOS ESTILOS
+        (bind $?nombre_todos_los_estilos (create$))
+        (bind $?lista_todos_los_estilos (find-all-instances ((?estilo Estilo_comida)) TRUE))
+
+        (loop-for-count (?i 1 (length$ $?lista_todos_los_estilos)) do
+            (bind ?j (nth$ ?i $?lista_todos_los_estilos))
+            (bind ?nombre_estilo (instance-name-to-symbol (instance-name ?j)))
+            (bind $?nombre_todos_los_estilos (insert$ $?nombre_todos_los_estilos (+ (length$ $?nombre_todos_los_estilos) 1) ?nombre_estilo))
+        )
+        (bind $?numero_estilos_escogidos (preguntar_lista "Escoge los estilos que más te gustan " $?nombre_todos_los_estilos))   
+
+        (bind $?estilos_escogidos (create$))
+        (loop-for-count (?i 1 (length$ $?numero_estilos_escogidos)) do
+            (bind ?j (nth$ ?i $?numero_estilos_escogidos))
+            (bind ?estilo_escogido (nth$ ?j $?lista_todos_los_estilos))
+            (bind $?estilos_escogidos (insert$ $?estilos_escogidos (+ (length$ $?estilos_escogidos) 1) ?estilo_escogido))
+        )
+        (printout t "ESTILOS ESCOGIDOS: " $?estilos_escogidos crlf)
+        ;(modify ?preferencias (estilosComida $?estilos_escogidos))
+
+    (modify ?preferencias
+        (estacion                      $?estaciones_escogidas)
+        (paises                        $?paises_escogidos)
+        (estilosComida                 $?estilos_escogidos))
+
+    (retract ?fact1 ?fact2 ?fact3) 
+)
 
 (defrule obtener_informacion::preguntar_alcohol "Pregunta sobre si se permite alcohol"
     (declare (salience 12))
@@ -698,10 +756,14 @@
     (focus tratar_informacion)
 )
 
+
 (defrule tratar_informacion::podar_platos "Hace instancias de los platos que cumplen las preferencias del cliente"
     (declare(salience 15))
 
     (preferencias-del-cliente (restriccionesDeIngredientes $?restriccionesDeIngredientes) 
+                              (estacion $?estacionPreferente)
+                              (paises $?paises)
+                              (estilosComida $?estilosComida)
                               (numeroComensales ?numeroComensales))
 
     
@@ -711,8 +773,10 @@
         =>
     (printout t "PODANDO PLATOS" crlf)
     (printout t "numero comensales " ?numeroComensales crlf)
+    (printout t "Nuestra estacion es esta " $?estacionPreferente crlf)
     (bind ?cumple_condiciones TRUE)
 
+    ;RESTRICCIONES
     ;Obtenemos ingrdientes
     (bind $?ingredientes_plato (send ?plato get-Plato_ingrediente))
 
@@ -729,6 +793,40 @@
         (if (eq ?cumple_condiciones FALSE) then (break))
     )
 
+    ;ESTACION
+
+    ;Miramos las estacione de cada uno
+    (printout t "Queee pasa, estos son mis ingredientes " $?ingredientes_plato  crlf)
+    (progn$ (?ingrediente $?ingredientes_plato)
+        (bind $?estaciones_ingrediente (send ?ingrediente get-Disponible_durante))
+        
+        (printout t "El ingrediente " ?ingrediente " está en " $?estaciones_ingrediente crlf)
+
+        (if (> (length $?estaciones_ingrediente) 0) then ; si un ingrediente tiene el atributo de la lista de estaciones vacía entonces está disponible siempre
+            
+            ; Miramos is está la estacion que queremos
+            (bind ?esta_la_estacion_preferente FALSE)
+            (progn$ (?estacion $?estaciones_ingrediente) ;luego cambiarlo para hacer solo 1 estacion (si vamos mal de tiempo nos inventamos que el usuario puede poner varias estaciones xD, rollo que por gusto quiere que haya comida de verano e invierno, o tratamos como lista pero solo hay 1)
+                (if (member$ ?estacion $?estacionPreferente) then
+                    (bind ?esta_la_estacion_preferente TRUE)
+                    (break)
+                )
+            )
+            (if (eq ?esta_la_estacion_preferente FALSE) then 
+                (printout t "El plato ete " ?plato " no nos sirve" crlf)
+                (bind ?cumple_condiciones FALSE)
+                (break)   
+            )
+        )
+        (if (eq ?cumple_condiciones FALSE) then (break))
+    )
+
+    ;PAISES
+
+
+    ;ESTILOS COMIDA
+
+    ;NUMERO COMENSALES -> PLATOS COMPLEJOS O NO
     ;Obtenemos complejidad
     (bind ?esComplejo (send ?plato get-Complejo?))
     (printout t "Plato " (instance-name ?plato) " es complejo? " ?esComplejo crlf)
@@ -746,6 +844,7 @@
 
     (assert (instancias_plato_hecha (plato ?plato)))
 )
+
 
 (defrule tratar_informacion::informacion_tratada "ya hemos tratado la informacion. Cambiar  de modulo"
     (declare (salience -1))
