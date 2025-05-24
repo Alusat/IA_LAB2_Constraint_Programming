@@ -565,6 +565,32 @@
     (retract ?fact)
 )
 
+(defrule obtener_informacion::preguntar_preferencias
+    (declare (salience 10))
+    ?preferencias <- (preferencias-del-cliente)
+    ?fact <- (setRestricciones)
+    =>
+     (printout t "PREGUNTANDO RESTRICCIONES" crlf)
+        (bind $?nombre_todas_las_restricciones (create$))
+        (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
+
+        (loop-for-count (?i 1 (length$ $?lista_todas_las_restricciones)) do
+            (bind ?j (nth$ ?i $?lista_todas_las_restricciones))
+            (bind ?nombre_restriccion (instance-name-to-symbol (instance-name ?j)))
+            (bind $?nombre_todas_las_restricciones (insert$ $?nombre_todas_las_restricciones (+ (length$ $?nombre_todas_las_restricciones) 1) ?nombre_restriccion))
+        )
+        (bind $?numero_restricciones_escogidas (preguntar_lista "Escoge restricciones en los alimentos" $?nombre_todas_las_restricciones))   
+
+        (bind $?restricciones_escogidas (create$))
+        (loop-for-count (?i 1 (length$ $?numero_restricciones_escogidas)) do
+            (bind ?j (nth$ ?i $?numero_restricciones_escogidas))
+            (bind ?restriccion_escogida (nth$ ?j $?lista_todas_las_restricciones))
+            (bind $?restricciones_escogidas (insert$ $?restricciones_escogidas (+ (length$ $?restricciones_escogidas) 1) ?restriccion_escogida))
+        )
+        (modify ?preferencias (restriccionesDeIngredientes $?restricciones_escogidas))
+    (retract ?fact)
+)
+
 (defrule obtener_informacion::preguntar_alcohol "Pregunta sobre si se permite alcohol"
     (declare (salience 9))
     ?preferencias <- (preferencias-del-cliente)
@@ -771,12 +797,12 @@
     (retract ?fact)
 )
 
-(defrule generar_menu::comprovar_precio "Comprovamos que se cumpla la restriccion de precio"
+(defrule generar_menu::comprobar_precio "Comprobamos que se cumpla la restriccion de precio"
     (declare (salience 7))
     ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida))
     (preferencias-del-cliente (precioMin ?precioMin) (precioMax ?precioMax))
     =>
-    (printout t "Comprovando precio" crlf)
+    (printout t "Comprobando precio" crlf)
     (bind ?precio_primero (send (send ?primero get-plato) get-Precio))
     (bind ?precio_segundo (send (send ?segundo get-plato) get-Precio))
     (bind ?precio_postre (send (send ?postre get-plato) get-Precio))
