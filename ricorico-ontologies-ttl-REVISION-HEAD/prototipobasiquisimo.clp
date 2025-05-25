@@ -42,6 +42,9 @@
     (slot Precio
         (type INTEGER)
         (create-accessor read-write))
+    (slot cohesion
+        (type INTEGER)
+        (create-accessor read-write))
 )
 
 (defclass Evento
@@ -75,7 +78,7 @@
     (multislot Pais_de_procedencia
         (type INSTANCE)
         (create-accessor read-write))
-    (multislot Es_de_estilo
+    (multislot Es_de_estilo                     ; para juntar con bebida
         (type INSTANCE)
         (create-accessor read-write))
     (multislot Menu/plato_bebida
@@ -91,7 +94,11 @@
         (type SYMBOL)
         (allowed-symbols TRUE FALSE)
         (create-accessor read-write))
-    (slot Caliente?
+    (slot Textura                               ; para juntar platos en menú
+        (type SYMBOL)
+        (allowed-symbols CRUJIENTE CREMOSO)
+        (create-accessor read-write))
+    (slot Caliente?                             ; para juntar platos en menú, hay que ir alternando temperatura y textura
         (type SYMBOL)
         (allowed-symbols TRUE FALSE)
         (create-accessor read-write))
@@ -155,6 +162,9 @@
 
     ([Yogurt_La_Fageda] of Plato
          (Precio  2)
+         (Complejo? FALSE)
+         (Textura CREMOSO)
+         (Caliente? FALSE)
          (Posicion_menu 3)
     )
 
@@ -162,6 +172,7 @@
          (Plato_ingrediente  [Carne])
          (Precio  5)
          (Complejo? FALSE)
+         (Textura CREMOSO)
          (Caliente? TRUE)
          (Posicion_menu 2)
     )
@@ -169,9 +180,10 @@
     ([Ensalada_Cesar] of Plato
         (Plato_ingrediente [Lechuga] [Pollo] [Queso_parmesano] [Pan_tostado])
         (Pais_de_procedencia [Italia] [Estados_Unidos])
-        (Es_de_estilo [Mediterraneo])
+        (Es_de_estilo [Clásico])
         (Precio 8)
         (Complejo? FALSE)
+        (Textura CRUJIENTE)
         (Caliente? FALSE)
         (Posicion_menu 2)
     )
@@ -196,6 +208,7 @@
         (Plato_ingrediente [Tomate] [Cebolla] [Ajo])
         (Precio 6)
         (Complejo? FALSE)
+        (Textura CREMOSO)
         (Caliente? TRUE)
         (Posicion_menu 1)
     )
@@ -244,7 +257,7 @@
     ([Otoño] of Estación
     )
 
-    ([Mediterraneo] of Estilo_comida
+    ([Moderno] of Estilo_comida
     )
 
     ;; Bebidas adicionales
@@ -297,9 +310,10 @@
     ([Salmorejo] of Plato
             (Plato_ingrediente [Tomate] [Huevo] [Ajo])
             (Pais_de_procedencia [España])
-            (Es_de_estilo [Mediterraneo])
+            (Es_de_estilo [Clásico])
             (Precio 6)
             (Complejo? FALSE)
+            (Textura CREMOSO)
             (Caliente? FALSE)
             (Posicion_menu 1)
     )
@@ -307,9 +321,10 @@
     ([Paella] of Plato
         (Plato_ingrediente [Arroz] [Pollo] [Pescado] [Tomate])
         (Pais_de_procedencia [España])
-        (Es_de_estilo [Mediterraneo])
+        (Es_de_estilo [Clásico])
         (Precio 12)
         (Complejo? TRUE)
+        (Textura CREMOSO)
         (Caliente? TRUE)
         (Posicion_menu 2)
     )
@@ -317,28 +332,19 @@
     ([Churros] of Plato
         (Plato_ingrediente [Harina] [Mantequilla] [Azúcar])
         (Pais_de_procedencia [España])
-        (Es_de_estilo [Mediterraneo])
+        (Es_de_estilo [Clásico])
         (Precio 4)
         (Complejo? FALSE)
+        (Textura CRUJIENTE)
         (Caliente? TRUE)
         (Posicion_menu 3)
-    )
-
-
-    ([Paella] of Plato
-        (Plato_ingrediente [Arroz] [Pollo] [Pescado] [Tomate])
-        (Pais_de_procedencia [España])
-        (Es_de_estilo [Mediterraneo])
-        (Precio 12)
-        (Complejo? TRUE)
-        (Caliente? TRUE)
-        (Posicion_menu 2)
     )
     
     ([Hamburguesa_Vegana] of Plato
         (Plato_ingrediente [Lechuga] [Tomate] [Pan_tostado])
         (Precio 9)
         (Complejo? FALSE)
+        (Textura CRUJIENTE)
         (Caliente? TRUE)
         (Posicion_menu 2)
     )
@@ -346,9 +352,10 @@
     ([Risotto] of Plato
         (Plato_ingrediente [Arroz] [Queso_parmesano] [Cebolla])
         (Pais_de_procedencia [Italia])
-        (Es_de_estilo [Italiano])
+        (Es_de_estilo [Sibarita])
         (Precio 10)
         (Complejo? TRUE)
+        (Textura CREMOSO)
         (Caliente? TRUE)
         (Posicion_menu 2)
     )
@@ -358,6 +365,7 @@
         (Plato_ingrediente [Calabacin] [Cebolla] [Ajo])
         (Precio 7)
         (Complejo? FALSE)
+        (Textura CREMOSO)
         (Caliente? TRUE)
         (Posicion_menu 1)
     )
@@ -366,6 +374,7 @@
         (Plato_ingrediente [Patata] [Zanahoria] [Huevo] [Mayonesa])
         (Precio 6)
         (Complejo? FALSE)
+        (Textura CRUJIENTE)
         (Caliente? FALSE)
         (Posicion_menu 1)
     )
@@ -375,6 +384,7 @@
         (Plato_ingrediente [Chocolate] [Huevo] [Azúcar])
         (Precio 5)
         (Complejo? TRUE)
+        (Textura CRUJIENTE)
         (Caliente? FALSE)
         (Posicion_menu 3)
     )
@@ -383,6 +393,7 @@
         (Plato_ingrediente [Huevo] [Leche] [Azúcar])
         (Precio 4)
         (Complejo? FALSE)
+        (Textura CREMOSO)
         (Caliente? FALSE)
         (Posicion_menu 3)
     )
@@ -391,6 +402,7 @@
         (Plato_ingrediente [Manzana] [Pera] [Platano])
         (Precio 3)
         (Complejo? FALSE)
+        (Textura CRUJIENTE)
         (Caliente? FALSE)
         (Posicion_menu 3)
     )
@@ -448,10 +460,10 @@
     )
 
     ;; Nuevos estilos
-    ([Italiano] of Estilo_comida
+    ([Sibarita] of Estilo_comida
     )
     
-    ([Americano] of Estilo_comida
+    ([Clásico] of Estilo_comida
     )
 )
 
@@ -496,12 +508,15 @@
     (slot primero (type INSTANCE))
     (slot segundo (type INSTANCE))
     (slot postre (type INSTANCE))
+    (slot cohesion (type INTEGER))
 )
 
 (deftemplate MAIN::combinacionMenuCompatible
     (slot primero (type INSTANCE))
     (slot segundo (type INSTANCE))
     (slot postre (type INSTANCE))
+    (slot cohesion (type INTEGER))
+
 )
 
 (deftemplate MAIN::menuCorrecto
@@ -509,6 +524,8 @@
     (slot segundo (type INSTANCE))
     (slot postre (type INSTANCE))
     (slot bebida (type INSTANCE))
+    (slot cohesion (type INTEGER))
+
 )
 
 ;para cuando se tenga que preguntar de una lista de opciones
@@ -543,6 +560,41 @@
 (deffunction MAIN::preguntar (?pregunta) "Pregunta de un unico valor"
     (printout t crlf ?pregunta crlf)
     (return (read))
+)
+
+;HEYNAU
+(deffunction MAIN::imprimir_menu (?menu_actual ?i)
+    (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
+    (bind $?primeros (send ?menu_actual get-Primero))
+    (bind $?segundos (send ?menu_actual get-Segundo))
+    (bind $?postres (send ?menu_actual get-Postre))
+    (bind ?precio (send ?menu_actual get-Precio))
+    (bind ?cohesion (send ?menu_actual get-cohesion))
+
+    (printout t crlf "--- MENU " ?i " ---" crlf)
+    (if (> (length$ $?bebidas) 0)
+        then
+        (bind ?bebida_menu (nth$ 1 $?bebidas))
+        (printout t "Bebida: " (instance-name ?bebida_menu) crlf)
+    )
+    (if (> (length$ $?primeros) 0)
+        then
+        (bind ?plato_primero (nth$ 1 $?primeros))
+        (printout t "Primero: " (instance-name ?plato_primero) crlf)
+    )
+    (if (> (length$ $?segundos) 0)
+        then
+        (bind ?plato_segundo (nth$ 1 $?segundos))
+        (printout t "Segundo: " (instance-name ?plato_segundo) crlf)
+    )
+    (if (> (length$ $?postres) 0)
+        then
+        (bind ?plato_postre (nth$ 1 $?postres))
+        (printout t "Postre: " (instance-name ?plato_postre) crlf)
+    )
+    (printout t "Precio: " ?precio " euros" crlf)
+    (printout t "Cohesion: " ?cohesion crlf)
+    (printout t "-------------------" crlf)
 )
 
 ;mensaje inicial, redirije a pillar datos
@@ -627,65 +679,65 @@
     =>
      (printout t "PREGUNTANDO PREFERENCIAS" crlf)
 
-     ;PREGUNTAMOS ESTACIÓN
-        (bind $?nombre_todas_las_estaciones (create$))
-        (bind $?lista_todas_las_estaciones (find-all-instances ((?estacion Estación)) TRUE))
+    ;PREGUNTAMOS ESTACIÓN ==========================================================================================================
+    (bind $?nombre_todas_las_estaciones (create$))
+    (bind $?lista_todas_las_estaciones (find-all-instances ((?estacion Estación)) TRUE))
 
-        (loop-for-count (?i 1 (length$ $?lista_todas_las_estaciones)) do
-            (bind ?j (nth$ ?i $?lista_todas_las_estaciones))
-            (bind ?nombre_estacion (instance-name-to-symbol (instance-name ?j)))
-            (bind $?nombre_todas_las_estaciones (insert$ $?nombre_todas_las_estaciones (+ (length$ $?nombre_todas_las_estaciones) 1) ?nombre_estacion))
-        )
-        (bind $?numero_estaciones_escogidas (preguntar_lista "Escoge la estacion en la que harás el evento" $?nombre_todas_las_estaciones))   
+    (loop-for-count (?i 1 (length$ $?lista_todas_las_estaciones)) do
+        (bind ?j (nth$ ?i $?lista_todas_las_estaciones))
+        (bind ?nombre_estacion (instance-name-to-symbol (instance-name ?j)))
+        (bind $?nombre_todas_las_estaciones (insert$ $?nombre_todas_las_estaciones (+ (length$ $?nombre_todas_las_estaciones) 1) ?nombre_estacion))
+    )
+    (bind $?numero_estaciones_escogidas (preguntar_lista "Escoge la estacion en la que harás el evento" $?nombre_todas_las_estaciones))   
 
-        (bind $?estaciones_escogidas (create$))
-        (loop-for-count (?i 1 (length$ $?numero_estaciones_escogidas)) do
-            (bind ?j (nth$ ?i $?numero_estaciones_escogidas))
-            (bind ?estacion_escogida (nth$ ?j $?lista_todas_las_estaciones))
-            (bind $?estaciones_escogidas (insert$ $?estaciones_escogidas (+ (length$ $?estaciones_escogidas) 1) ?estacion_escogida))
-        )
-        (printout t "ESTACIONES ESCOGIDAS: " $?estaciones_escogidas crlf)
-        ;(modify ?preferencias (estacion $?estaciones_escogidas))
+    (bind $?estaciones_escogidas (create$))
+    (loop-for-count (?i 1 (length$ $?numero_estaciones_escogidas)) do
+        (bind ?j (nth$ ?i $?numero_estaciones_escogidas))
+        (bind ?estacion_escogida (nth$ ?j $?lista_todas_las_estaciones))
+        (bind $?estaciones_escogidas (insert$ $?estaciones_escogidas (+ (length$ $?estaciones_escogidas) 1) ?estacion_escogida))
+    )
+    (printout t "ESTACIONES ESCOGIDAS: " $?estaciones_escogidas crlf)
+        
 
-    ;PREGUNTAMOS PAISES
-        (bind $?nombre_todos_los_paises (create$))
-        (bind $?lista_todos_los_paises (find-all-instances ((?pais Paises)) TRUE))
+    ;PREGUNTAMOS PAISES ==========================================================================================================
+    (bind $?nombre_todos_los_paises (create$))
+    (bind $?lista_todos_los_paises (find-all-instances ((?pais Paises)) TRUE))
 
-        (loop-for-count (?i 1 (length$ $?lista_todos_los_paises)) do
-            (bind ?j (nth$ ?i $?lista_todos_los_paises))
-            (bind ?nombre_pais (instance-name-to-symbol (instance-name ?j)))
-            (bind $?nombre_todos_los_paises (insert$ $?nombre_todos_los_paises (+ (length$ $?nombre_todos_los_paises) 1) ?nombre_pais))
-        )
-        (bind $?numero_paises_escogidos (preguntar_lista "¿De qué paises quieres que sean típicos los platos?" $?nombre_todos_los_paises))   
+    (loop-for-count (?i 1 (length$ $?lista_todos_los_paises)) do
+        (bind ?j (nth$ ?i $?lista_todos_los_paises))
+        (bind ?nombre_pais (instance-name-to-symbol (instance-name ?j)))
+        (bind $?nombre_todos_los_paises (insert$ $?nombre_todos_los_paises (+ (length$ $?nombre_todos_los_paises) 1) ?nombre_pais))
+    )
+    (bind $?numero_paises_escogidos (preguntar_lista "¿De qué paises quieres que sean típicos los platos?" $?nombre_todos_los_paises))   
 
-        (bind $?paises_escogidos (create$))
-        (loop-for-count (?i 1 (length$ $?numero_paises_escogidos)) do
-            (bind ?j (nth$ ?i $?numero_paises_escogidos))
-            (bind ?pais_escogido (nth$ ?j $?lista_todos_los_paises))
-            (bind $?paises_escogidos (insert$ $?paises_escogidos (+ (length$ $?paises_escogidos) 1) ?pais_escogido))
-        )
-        (printout t "PAISES ESCOGIDOS: " $?paises_escogidos crlf)
-        ;(modify ?preferencias (paises $?paises_escogidos))
+    (bind $?paises_escogidos (create$))
+    (loop-for-count (?i 1 (length$ $?numero_paises_escogidos)) do
+        (bind ?j (nth$ ?i $?numero_paises_escogidos))
+        (bind ?pais_escogido (nth$ ?j $?lista_todos_los_paises))
+        (bind $?paises_escogidos (insert$ $?paises_escogidos (+ (length$ $?paises_escogidos) 1) ?pais_escogido))
+    )
+    (printout t "PAISES ESCOGIDOS: " $?paises_escogidos crlf)
+        
 
-    ;PREGUNTAMOS ESTILOS
-        (bind $?nombre_todos_los_estilos (create$))
-        (bind $?lista_todos_los_estilos (find-all-instances ((?estilo Estilo_comida)) TRUE))
+    ;PREGUNTAMOS ESTILOS ==========================================================================================================
+    (bind $?nombre_todos_los_estilos (create$))
+    (bind $?lista_todos_los_estilos (find-all-instances ((?estilo Estilo_comida)) TRUE))
 
-        (loop-for-count (?i 1 (length$ $?lista_todos_los_estilos)) do
-            (bind ?j (nth$ ?i $?lista_todos_los_estilos))
-            (bind ?nombre_estilo (instance-name-to-symbol (instance-name ?j)))
-            (bind $?nombre_todos_los_estilos (insert$ $?nombre_todos_los_estilos (+ (length$ $?nombre_todos_los_estilos) 1) ?nombre_estilo))
-        )
-        (bind $?numero_estilos_escogidos (preguntar_lista "Escoge los estilos que más te gustan " $?nombre_todos_los_estilos))   
+    (loop-for-count (?i 1 (length$ $?lista_todos_los_estilos)) do
+        (bind ?j (nth$ ?i $?lista_todos_los_estilos))
+        (bind ?nombre_estilo (instance-name-to-symbol (instance-name ?j)))
+        (bind $?nombre_todos_los_estilos (insert$ $?nombre_todos_los_estilos (+ (length$ $?nombre_todos_los_estilos) 1) ?nombre_estilo))
+    )
+    (bind $?numero_estilos_escogidos (preguntar_lista "Escoge los estilos que más te gustan " $?nombre_todos_los_estilos))   
 
-        (bind $?estilos_escogidos (create$))
-        (loop-for-count (?i 1 (length$ $?numero_estilos_escogidos)) do
-            (bind ?j (nth$ ?i $?numero_estilos_escogidos))
-            (bind ?estilo_escogido (nth$ ?j $?lista_todos_los_estilos))
-            (bind $?estilos_escogidos (insert$ $?estilos_escogidos (+ (length$ $?estilos_escogidos) 1) ?estilo_escogido))
-        )
-        (printout t "ESTILOS ESCOGIDOS: " $?estilos_escogidos crlf)
-        ;(modify ?preferencias (estilosComida $?estilos_escogidos))
+    (bind $?estilos_escogidos (create$))
+    (loop-for-count (?i 1 (length$ $?numero_estilos_escogidos)) do
+        (bind ?j (nth$ ?i $?numero_estilos_escogidos))
+        (bind ?estilo_escogido (nth$ ?j $?lista_todos_los_estilos))
+        (bind $?estilos_escogidos (insert$ $?estilos_escogidos (+ (length$ $?estilos_escogidos) 1) ?estilo_escogido))
+    )
+    (printout t "ESTILOS ESCOGIDOS: " $?estilos_escogidos crlf)
+    
 
     (modify ?preferencias
         (estacion                      $?estaciones_escogidas)
@@ -996,13 +1048,109 @@
     (printout t "Tenemos " (length$ $?platos) " platos adecuados" crlf)
     (printout t "Tenemos " (length$ $?bebidas) " bebidas adecuadas" crlf)
     (printout t "Generando combinaciones adecuadas" crlf)
+
+    
+
     (progn$ (?primero $?platos)
         (if (eq 1 (send (send ?primero get-plato) get-Posicion_menu)) then
             (progn$ (?segundo $?platos)
                 (if (eq 2 (send (send ?segundo get-plato) get-Posicion_menu)) then
+
+                    (bind ?cohesion_12 0) ; Cohesion entre primero y segundo
+
+                    ; Si la textura entre el primero y el segundo es distinta sumar 1 a la cohesión del menú
+                    (bind ?textura_primero (send (send ?primero get-plato) get-Textura))
+                    (bind ?textura_segundo (send (send ?segundo get-plato) get-Textura))
+
+                    ;(printout t "hey esta es una textura " ?textura_primero " y esta otra " ?textura_segundo crlf)
+
+                    (if (not (eq ?textura_primero ?textura_segundo)) then
+                        (bind ?cohesion_12 (+ ?cohesion_12 1)) ; ++cohesion_menu básicamente
+                        ;(printout t "El plato " (instance-name (send ?primero get-plato)) " tiene textura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 12: " ?cohesion_12 crlf)
+                    )
+
+                    ; Si la temperatura entre el primero y el segundo es distinta sumar 1 a la cohesión del menú
+                    (bind ?es_caliente_primero (send (send ?primero get-plato) get-Caliente?))
+                    (bind ?es_caliente_segundo (send (send ?segundo get-plato) get-Caliente?))
+
+                    (if (not (eq ?es_caliente_primero ?es_caliente_segundo)) then
+                        (bind ?cohesion_12 (+ ?cohesion_12 1)) ; ++cohesion_menu
+                        ;(printout t "El plato " (instance-name (send ?primero get-plato)) " tiene temperatura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 12: " ?cohesion_12 crlf)
+                    )
+
+
+                    ; Si tienen un estilo que coincide
+                    (bind $?estilos_primero (send (send ?primero get-plato) get-Es_de_estilo))
+                    (bind $?estilos_segundo (send (send ?segundo get-plato) get-Es_de_estilo))
+
+                    (progn$ (?estilo $?estilos_primero)
+                        (if (member ?estilo $?estilos_segundo) then
+                            (bind ?cohesion_12 (+ ?cohesion_12 1)) ; ++cohesion_menu
+                            ;(printout t "El plato " (instance-name (send ?primero get-plato)) " tiene estilo igual a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 12: " ?cohesion_12 crlf)
+                            (break)
+                        )
+                    )
+
                     (progn$ (?postre $?platos)
                         (if (eq 3 (send (send ?postre get-plato) get-Posicion_menu)) then
-                            (assert (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre)))
+                            ; Si la textura entre el postre y el segundo es distinta sumar 1 a la cohesión del menú
+                            (bind ?textura_primero (send (send ?primero get-plato) get-Textura))
+                            (bind ?textura_segundo (send (send ?segundo get-plato) get-Textura))
+                            (bind ?textura_postre (send (send ?postre get-plato) get-Textura))
+
+                            (bind ?cohesion_23_y_31 0) ; Cohesion entre segundo y postre + cohesion entre postre y primero
+
+                            (if (not (eq ?textura_postre ?textura_segundo)) then
+                                (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu básicamente
+                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene textura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
+                            )
+
+                            (if (not (eq ?textura_postre ?textura_primero)) then
+                                (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
+                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene textura diferente a " (instance-name (send ?primero get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
+                            )
+
+                            ; Si la temperatura entre el postre y el segundo es distinta sumar 1 a la cohesión del menú
+                            (bind ?es_caliente_primero (send (send ?primero get-plato) get-Caliente?))
+                            (bind ?es_caliente_segundo (send (send ?segundo get-plato) get-Caliente?))
+                            (bind ?es_caliente_postre (send (send ?postre get-plato) get-Caliente?))
+
+                            (if (not (eq ?es_caliente_postre ?es_caliente_segundo)) then
+                                (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
+                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene temperatura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
+                            )
+
+                            (if (not (eq ?es_caliente_postre ?es_caliente_primero)) then
+                                (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
+                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene temperatura diferente a " (instance-name (send ?primero get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
+                            )
+
+                            ; Si tienen un estilo que coincide
+                            (bind $?estilos_primero (send (send ?primero get-plato) get-Es_de_estilo))
+                            (bind $?estilos_segundo (send (send ?segundo get-plato) get-Es_de_estilo))
+                            (bind $?estilos_postre (send (send ?postre get-plato) get-Es_de_estilo))
+
+                            (progn$ (?estilo $?estilos_postre)
+                                (if (member ?estilo ?estilos_segundo) then
+                                    (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
+                                    ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene estilo igual a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
+                                    (break)
+                                )
+                            )
+
+                            (progn$ (?estilo $?estilos_postre)
+                                (if (member ?estilo ?estilos_primero) then
+                                    (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
+                                    ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene estilo igual a " (instance-name (send ?primero get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
+                                    (break)
+                                )
+                            )
+
+                            (bind ?cohesion_menu (+ ?cohesion_12 ?cohesion_23_y_31))
+
+                            ;(printout t "Cohesion menu es " ?cohesion_menu crlf)
+
+                            (assert (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu)))
                         )
                     )
                 )
@@ -1013,22 +1161,22 @@
 
 (defrule generar_menu::comprobar_incompatibilidades "Comprueba las incompatibilidades de los platos"
     (declare (salience 12))
-    ?fact <- (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre))
+    ?fact <- (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu))
     =>
     (printout t "comprobando incompatibilidades" crlf)
     ;para cada uno de los componentes del menú mirar si son incompatibles con alguno de los demás
-    (assert (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre)))
+    (assert (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu)))
     (retract ?fact);tanto si si como si no borramos la combinacion que acabamos de mirar
 )
 
 (defrule generar_menu::comprobar_bebidas "Para cada bebida miramos si es compatible con todos los elementos de un menú" 
     (declare (salience 10))
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
-    ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre))
+    ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu))
     =>
         (printout t "Ahora comprobando bebidas" crlf)
     (progn$ (?bebida $?bebidas)
-        (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida)))
+        (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida) (cohesion ?cohesion_menu)))
     )
     (retract ?fact)
 )
@@ -1036,7 +1184,7 @@
 
 (defrule generar_menu::comprobar_precio "Comprobamos que se cumpla la restriccion de precio"
     (declare (salience 7))
-    ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida))
+    ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida) (cohesion ?cohesion_menu))
     (preferencias-del-cliente (precioMin ?precioMin) (precioMax ?precioMax))
     =>
     (printout t "Comprobando precio" crlf)
@@ -1056,7 +1204,9 @@
             (Primero (send ?primero get-plato))
             (Segundo (send ?segundo get-plato))
             (Postre (send ?postre get-plato))
-            (Precio ?precioTotal))
+            (Precio ?precioTotal)
+            (cohesion ?cohesion_menu)
+        )
     else
         (printout t "Menú fuera del rango de precio: " ?precioTotal " euros (rango: " ?precioMin "-" ?precioMax ")" crlf)
     )
@@ -1073,43 +1223,107 @@
 (defrule mostrar_soluciones::imprimir_menus "Imprime las soluciones encontradas"
     =>
     (printout t "Los menus resultantes son los siguientes:" crlf)
-
     (bind $?todos_los_menus (find-all-instances ((?menu Menu)) TRUE))
 
-    (loop-for-count (?i 1 (length$ $?todos_los_menus)) do
-        (bind ?menu_actual (nth$ ?i $?todos_los_menus))
-
-        (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
-        (bind $?primeros (send ?menu_actual get-Primero))
-        (bind $?segundos (send ?menu_actual get-Segundo))
-        (bind $?postres (send ?menu_actual get-Postre))
-        (bind ?precio (send ?menu_actual get-Precio))
-
-        (printout t crlf "--- MENU " ?i " ---" crlf)
-
-        (if (> (length$ $?bebidas) 0) then
-            (bind ?bebida_menu (nth$ 1 $?bebidas))
-            (printout t "Bebida: " (instance-name ?bebida_menu) crlf)
-        )
-
-        (if (> (length$ $?primeros) 0) then
-            (bind ?plato_primero (nth$ 1 $?primeros))
-            (printout t "Primero: " (instance-name ?plato_primero) crlf)
-        )
-
-        (if (> (length$ $?segundos) 0) then
-            (bind ?plato_segundo (nth$ 1 $?segundos))
-            (printout t "Segundo: " (instance-name ?plato_segundo) crlf)
-        )
-
-        (if (> (length$ $?postres) 0) then
-            (bind ?plato_postre (nth$ 1 $?postres))
-            (printout t "Postre: " (instance-name ?plato_postre) crlf)
-        )
-
-        (printout t "Precio: " ?precio " euros" crlf)
-        (printout t "-------------------" crlf)
+    (if (eq (length$ $?todos_los_menus) 0)
+        then
+        (printout t "No se encontraron menús que cumplan los criterios." crlf)
+        (return)
     )
+
+    (bind $?menus_maxima_cohesion_encontrada (create$))
+    (bind ?nivel_max_cohesion_encontrado -1)
+
+    (bind ?menu_barato nil) ; <20 euros
+    (bind ?menu_medio nil) ; 20-30 euros
+    (bind ?menu_caro nil) ; >30 euros
+    
+    (bind ?cohesion_buscada 9)
+    (while (>= ?cohesion_buscada 0) do ; uso un while porque con el loop for count no puedes decrementar, sus muertos
+        ;(printout t "cohesion buscada: " ?cohesion_buscada crlf)
+        (bind $?menus_con_cohesion_actual (create$))
+
+        (loop-for-count (?idx_menu 1 (length$ $?todos_los_menus)) do
+            (bind ?menu_actual (nth$ ?idx_menu $?todos_los_menus))
+            (bind ?cohesion_del_menu (send ?menu_actual get-cohesion))
+            (if (eq ?cohesion_del_menu ?cohesion_buscada)
+                then
+                (bind $?menus_con_cohesion_actual (insert$ $?menus_con_cohesion_actual (+ (length$ $?menus_con_cohesion_actual) 1) ?menu_actual))
+
+                (bind ?precio_del_menu (send ?menu_actual get-Precio))
+                
+                (if (<= ?precio_del_menu 20) then
+                    (bind ?menu_barato ?menu_actual)
+                
+                else 
+                    (if (>= ?precio_del_menu 30) then
+                        (bind ?menu_caro ?menu_actual)
+                    else
+                        (bind ?menu_medio ?menu_actual) ; entre 20 y 30
+                    )
+                )
+            )
+        )
+
+        (if (> (length$ $?menus_con_cohesion_actual) 0)
+            then
+            (bind $?menus_maxima_cohesion_encontrada $?menus_con_cohesion_actual)
+            (bind ?nivel_max_cohesion_encontrado ?cohesion_buscada)
+            (break) 
+        )
+
+        
+        (bind ?cohesion_buscada (- ?cohesion_buscada 1))
+        
+    )
+
+    ; ;comprobamos si tras el bucle la lista de menus sigue vacia
+    ; (if (eq (length$ $?menus_maxima_cohesion_encontrada) 0)
+    ;     then
+    ;     (printout t crlf "No se encontró ningún menú con una cohesión válida." crlf)
+    ;     (return)
+    ; )
+
+    (imprimir_menu ?menu_barato "Caro")
+    (imprimir_menu ?menu_medio "Medio")
+    (imprimir_menu ?menu_caro "Barato")
+
+
+    ; (loop-for-count (?i 1 (length$ $?menus_maxima_cohesion_encontrada)) do
+    ;     (bind ?menu_actual (nth$ ?i $?menus_maxima_cohesion_encontrada))
+    ;     (imprimir_menu ?menu_actual ?i) ; LO HE PUESTO TODO EN UNA FUNCIÓN, DEJO LO DE ABAJO COMENTADO POR SI ACASO
+    ;     ; (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
+    ;     ; (bind $?primeros (send ?menu_actual get-Primero))
+    ;     ; (bind $?segundos (send ?menu_actual get-Segundo))
+    ;     ; (bind $?postres (send ?menu_actual get-Postre))
+    ;     ; (bind ?precio (send ?menu_actual get-Precio))
+    ;     ; (bind ?cohesion (send ?menu_actual get-cohesion))
+
+    ;     ; (printout t crlf "--- MENU " ?i " ---" crlf)
+    ;     ; (if (> (length$ $?bebidas) 0)
+    ;     ;     then
+    ;     ;     (bind ?bebida_menu (nth$ 1 $?bebidas))
+    ;     ;     (printout t "Bebida: " (instance-name ?bebida_menu) crlf)
+    ;     ; )
+    ;     ; (if (> (length$ $?primeros) 0)
+    ;     ;     then
+    ;     ;     (bind ?plato_primero (nth$ 1 $?primeros))
+    ;     ;     (printout t "Primero: " (instance-name ?plato_primero) crlf)
+    ;     ; )
+    ;     ; (if (> (length$ $?segundos) 0)
+    ;     ;     then
+    ;     ;     (bind ?plato_segundo (nth$ 1 $?segundos))
+    ;     ;     (printout t "Segundo: " (instance-name ?plato_segundo) crlf)
+    ;     ; )
+    ;     ; (if (> (length$ $?postres) 0)
+    ;     ;     then
+    ;     ;     (bind ?plato_postre (nth$ 1 $?postres))
+    ;     ;     (printout t "Postre: " (instance-name ?plato_postre) crlf)
+    ;     ; )
+    ;     ; (printout t "Precio: " ?precio " euros" crlf)
+    ;     ; (printout t "Cohesion: " ?cohesion crlf)
+    ;     ; (printout t "-------------------" crlf)
+    ; )
 )
 
 (reset)
