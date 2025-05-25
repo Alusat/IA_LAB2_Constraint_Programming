@@ -293,6 +293,38 @@
     )
 
     ;; Platos principales adicionales
+
+    ([Salmorejo] of Plato
+            (Plato_ingrediente [Tomate] [Huevo] [Ajo])
+            (Pais_de_procedencia [España])
+            (Es_de_estilo [Mediterraneo])
+            (Precio 6)
+            (Complejo? FALSE)
+            (Caliente? FALSE)
+            (Posicion_menu 1)
+    )
+
+    ([Paella] of Plato
+        (Plato_ingrediente [Arroz] [Pollo] [Pescado] [Tomate])
+        (Pais_de_procedencia [España])
+        (Es_de_estilo [Mediterraneo])
+        (Precio 12)
+        (Complejo? TRUE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+    )
+
+    ([Churros] of Plato
+        (Plato_ingrediente [Harina] [Mantequilla] [Azúcar])
+        (Pais_de_procedencia [España])
+        (Es_de_estilo [Mediterraneo])
+        (Precio 4)
+        (Complejo? FALSE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+    )
+
+
     ([Paella] of Plato
         (Plato_ingrediente [Arroz] [Pollo] [Pescado] [Tomate])
         (Pais_de_procedencia [España])
@@ -340,7 +372,7 @@
 
     ;; Postres adicionales
     ([Tarta_Chocolate] of Plato
-        (Plato_ingrediente [Chocolate] [Huevo])
+        (Plato_ingrediente [Chocolate] [Huevo] [Azúcar])
         (Precio 5)
         (Complejo? TRUE)
         (Caliente? FALSE)
@@ -348,7 +380,7 @@
     )
     
     ([Flan] of Plato
-        (Plato_ingrediente [Huevo] [Leche])
+        (Plato_ingrediente [Huevo] [Leche] [Azúcar])
         (Precio 4)
         (Complejo? FALSE)
         (Caliente? FALSE)
@@ -374,6 +406,16 @@
     ([Calabacin] of Ingrediente
         (Disponible_durante [Verano] [Otoño])
     )
+
+    ([Harina] of Ingrediente
+    )
+
+    ([Azúcar] of Ingrediente
+    )
+
+    ([Mantequilla] of Ingrediente
+    )
+
     
     ([Zanahoria] of Ingrediente
     )
@@ -761,9 +803,9 @@
     (declare(salience 15))
 
     (preferencias-del-cliente (restriccionesDeIngredientes $?restriccionesDeIngredientes) 
-                              (estacion $?estacionPreferente)
-                              (paises $?paises)
-                              (estilosComida $?estilosComida)
+                              (estacion $?estaciones_cliente)
+                              (paises $?paises_cliente)
+                              (estilosComida $?estilos_comida_clientes)
                               (numeroComensales ?numeroComensales))
 
     
@@ -773,58 +815,111 @@
         =>
     (printout t "PODANDO PLATOS" crlf)
     (printout t "numero comensales " ?numeroComensales crlf)
-    (printout t "Nuestra estacion es esta " $?estacionPreferente crlf)
+    (printout t "Nuestra estacion es esta " $?estaciones_cliente crlf)
     (bind ?cumple_condiciones TRUE)
 
     ;RESTRICCIONES
     ;Obtenemos ingrdientes
     (bind $?ingredientes_plato (send ?plato get-Plato_ingrediente))
 
-    ;Miramos las restricciones de cada uno
-    (progn$ (?ingrediente $?ingredientes_plato)
-        (bind $?restricciones_ingrediente (send ?ingrediente get-restricción_ingrediente))
-        ;Alguna esta prohibida por el cliente?
-        (progn$ (?restriccion $?restricciones_ingrediente)
-            (if (member$ ?restriccion $?restriccionesDeIngredientes) then
-                (bind ?cumple_condiciones FALSE)
-                (break)
+    (if (> (length $?restriccionesDeIngredientes) 0) then ;si el cliente no nos dice ninguna restrición es que no tiene
+        ;Miramos las restricciones de cada uno
+        (progn$ (?ingrediente $?ingredientes_plato)
+            (bind $?restricciones_ingrediente (send ?ingrediente get-restricción_ingrediente))
+            ;Alguna esta prohibida por el cliente?
+            (progn$ (?restriccion $?restricciones_ingrediente)
+                (if (member$ ?restriccion $?restriccionesDeIngredientes) then
+                    (bind ?cumple_condiciones FALSE)
+                    (break)
+                )
             )
+            (if (eq ?cumple_condiciones FALSE) then (break))
         )
-        (if (eq ?cumple_condiciones FALSE) then (break))
     )
 
     ;ESTACION
 
     ;Miramos las estacione de cada uno
     (printout t "Queee pasa, estos son mis ingredientes " $?ingredientes_plato  crlf)
-    (progn$ (?ingrediente $?ingredientes_plato)
-        (bind $?estaciones_ingrediente (send ?ingrediente get-Disponible_durante))
-        
-        (printout t "El ingrediente " ?ingrediente " está en " $?estaciones_ingrediente crlf)
 
-        (if (> (length $?estaciones_ingrediente) 0) then ; si un ingrediente tiene el atributo de la lista de estaciones vacía entonces está disponible siempre
+    
+    (if (> (length $?estaciones_cliente) 0) then ;si el cliente no nos dice ninguna estación ess que le da igual
+        (progn$ (?ingrediente $?ingredientes_plato)
+            (bind $?estaciones_ingrediente (send ?ingrediente get-Disponible_durante))
             
-            ; Miramos is está la estacion que queremos
-            (bind ?esta_la_estacion_preferente FALSE)
-            (progn$ (?estacion $?estaciones_ingrediente) ;luego cambiarlo para hacer solo 1 estacion (si vamos mal de tiempo nos inventamos que el usuario puede poner varias estaciones xD, rollo que por gusto quiere que haya comida de verano e invierno, o tratamos como lista pero solo hay 1)
-                (if (member$ ?estacion $?estacionPreferente) then
-                    (bind ?esta_la_estacion_preferente TRUE)
-                    (break)
+            (printout t "El ingrediente " ?ingrediente " está en " $?estaciones_ingrediente crlf)
+
+            (if (> (length $?estaciones_ingrediente) 0) then ; si un ingrediente tiene el atributo de la lista de estaciones vacía entonces está disponible siempre
+                
+                ; Miramos is está la estacion que queremos
+                (bind ?esta_la_estacion_preferente FALSE)
+                (progn$ (?estacion $?estaciones_ingrediente) ;luego cambiarlo para hacer solo 1 estacion (si vamos mal de tiempo nos inventamos que el usuario puede poner varias estaciones xD, rollo que por gusto quiere que haya comida de verano e invierno, o tratamos como lista pero solo hay 1)
+                    (if (member$ ?estacion $?estaciones_cliente) then
+                        (bind ?esta_la_estacion_preferente TRUE)
+                        (break)
+                    )
+                )
+                (if (eq ?esta_la_estacion_preferente FALSE) then 
+                    (printout t "El plato ete " ?plato " no nos sirve" crlf)
+                    (bind ?cumple_condiciones FALSE)
+                    (break)   
                 )
             )
-            (if (eq ?esta_la_estacion_preferente FALSE) then 
-                (printout t "El plato ete " ?plato " no nos sirve" crlf)
-                (bind ?cumple_condiciones FALSE)
-                (break)   
-            )
+            (if (eq ?cumple_condiciones FALSE) then (break))
         )
-        (if (eq ?cumple_condiciones FALSE) then (break))
     )
 
     ;PAISES
 
+    
+
+    (if (> (length $?paises_cliente) 0) then ;si el cliente no nos dice ningun pais ess que le da igual
+
+        (bind ?esta_uno_de_los_paises_cliente FALSE)
+
+        (bind $?paises_plato (send ?plato get-Pais_de_procedencia))
+        (progn$ (?pais $?paises_plato)
+
+            
+
+            (if (member$ ?pais $?paises_cliente) then
+                (bind ?esta_uno_de_los_paises_cliente TRUE)
+                (break)
+            )
+
+        )
+
+        (if (eq ?esta_uno_de_los_paises_cliente FALSE) then 
+            (printout t "El plato ete " ?plato " no nos sirve porque no es de los paises " $?paises_cliente crlf)
+            (bind ?cumple_condiciones FALSE) 
+        )
+    )
 
     ;ESTILOS COMIDA
+
+    (if (> (length $?estilos_comida_clientes) 0) then ;si el cliente no nos dice ningun estilo ess que le da igual
+
+        (bind ?esta_uno_de_los_estilos_cliente FALSE)
+
+        (bind $?estilos_plato (send ?plato get-Es_de_estilo))
+        (progn$ (?estilo $?estilos_plato)
+
+            
+
+            (if (member$ ?estilo $?estilos_comida_clientes) then
+                (bind ?esta_uno_de_los_estilos_cliente TRUE)
+                (break)
+            )
+
+        )
+
+        (if (eq ?esta_uno_de_los_estilos_cliente FALSE) then 
+            (printout t "El plato ete " ?plato " no nos sirve porque no es de los estilos " $?estilos_comida_clientes crlf)
+            (bind ?cumple_condiciones FALSE) 
+        )
+    )
+
+
 
     ;NUMERO COMENSALES -> PLATOS COMPLEJOS O NO
     ;Obtenemos complejidad
