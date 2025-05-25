@@ -1231,9 +1231,6 @@
         (return)
     )
 
-    (bind $?menus_maxima_cohesion_encontrada (create$))
-    (bind ?nivel_max_cohesion_encontrado -1)
-
     (bind ?menu_barato nil) ; <20 euros
     (bind ?menu_medio nil) ; 20-30 euros
     (bind ?menu_caro nil) ; >30 euros
@@ -1248,45 +1245,35 @@
             (bind ?cohesion_del_menu (send ?menu_actual get-cohesion))
             (if (eq ?cohesion_del_menu ?cohesion_buscada)
                 then
-                (bind $?menus_con_cohesion_actual (insert$ $?menus_con_cohesion_actual (+ (length$ $?menus_con_cohesion_actual) 1) ?menu_actual))
+                ;(bind $?menus_con_cohesion_actual (insert$ $?menus_con_cohesion_actual (+ (length$ $?menus_con_cohesion_actual) 1) ?menu_actual))
 
                 (bind ?precio_del_menu (send ?menu_actual get-Precio))
                 
-                (if (<= ?precio_del_menu 20) then
+                (if (and (eq ?menu_barato nil) (<= ?precio_del_menu 20)) then
                     (bind ?menu_barato ?menu_actual)
                 
                 else 
-                    (if (>= ?precio_del_menu 30) then
+                    (if (and (eq ?menu_caro nil) (>= ?precio_del_menu 30)) then
                         (bind ?menu_caro ?menu_actual)
                     else
-                        (bind ?menu_medio ?menu_actual) ; entre 20 y 30
+                        (if (eq ?menu_medio nil) then
+                            (bind ?menu_medio ?menu_actual) ; entre 20 y 30
+                        )
                     )
                 )
+
+                (if (not (or (eq ?menu_barato nil) (eq ?menu_medio nil) (eq ?menu_caro nil))) then (break) )
             )
         )
-
-        (if (> (length$ $?menus_con_cohesion_actual) 0)
-            then
-            (bind $?menus_maxima_cohesion_encontrada $?menus_con_cohesion_actual)
-            (bind ?nivel_max_cohesion_encontrado ?cohesion_buscada)
-            (break) 
-        )
-
         
         (bind ?cohesion_buscada (- ?cohesion_buscada 1))
         
     )
 
-    ; ;comprobamos si tras el bucle la lista de menus sigue vacia
-    ; (if (eq (length$ $?menus_maxima_cohesion_encontrada) 0)
-    ;     then
-    ;     (printout t crlf "No se encontró ningún menú con una cohesión válida." crlf)
-    ;     (return)
-    ; )
 
-    (imprimir_menu ?menu_barato "Caro")
+    (imprimir_menu ?menu_barato "Barato")
     (imprimir_menu ?menu_medio "Medio")
-    (imprimir_menu ?menu_caro "Barato")
+    (imprimir_menu ?menu_caro "Caro")
 
 
     ; (loop-for-count (?i 1 (length$ $?menus_maxima_cohesion_encontrada)) do
