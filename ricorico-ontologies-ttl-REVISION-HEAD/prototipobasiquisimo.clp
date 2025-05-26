@@ -136,6 +136,9 @@
     (slot Alcohol?
         (type SYMBOL)
         (create-accessor read-write))
+    (multislot Conjunta_con_estilo
+        (type INSTANCE)
+        (create-accessor read-write))
 )
 
 ;clase extra para irse guardando los platos candidatos a estar en menú
@@ -151,6 +154,7 @@
     ([Agua] of Bebida
          (Alcohol?  "false")
          (Precio 1)
+         (Conjunta_con_estilo [Clásico] [Sibarita] [Moderno])
     )
 
     ([Carne] of Ingrediente
@@ -226,11 +230,13 @@
     ([Coca_Cola] of Bebida
         (Alcohol? "false")
         (Precio 3)
+        (Conjunta_con_estilo [Moderno])
     )
 
     ([Vino_tinto] of Bebida
         (Alcohol? "true")
         (Precio 15)
+        (Conjunta_con_estilo [Clásico] [Sibarita])
     )
 
     ([Vegetariano] of Restricciones
@@ -264,21 +270,25 @@
     ([Cerveza] of Bebida
         (Alcohol? "true")
         (Precio 4)
+        (Conjunta_con_estilo [Clásico])
     )
     
     ([Zumo_Naranja] of Bebida
         (Alcohol? "false")
         (Precio 3)
+        (Conjunta_con_estilo [Clásico] [Moderno])
     )
     
     ([Té] of Bebida
         (Alcohol? "false")
         (Precio 2)
+        (Conjunta_con_estilo [Clásico] [Sibarita] )
     )
     
     ([Sangria] of Bebida
         (Alcohol? "true")
         (Precio 8)
+        (Conjunta_con_estilo [Clásico] [Moderno])
     )
 
     ;; Ingredientes adicionales
