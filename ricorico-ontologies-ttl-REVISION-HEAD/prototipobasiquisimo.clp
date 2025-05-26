@@ -276,7 +276,7 @@
     ([Zumo_Naranja] of Bebida
         (Alcohol? "false")
         (Precio 3)
-        (Conjunta_con_estilo [Clásico] [Moderno])
+        (Conjunta_con_estilo [Moderno])
     )
     
     ([Té] of Bebida
@@ -1191,8 +1191,58 @@
     ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu))
     =>
         (printout t "Ahora comprobando bebidas" crlf)
-    (progn$ (?bebida $?bebidas)
-        (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida) (cohesion ?cohesion_menu)))
+    (progn$ (?bebida $?bebidas) ;NEW STUFF
+        (bind ?bebida_compatible_primero FALSE)
+        (bind ?bebida_compatible_segundo FALSE)
+        (bind ?bebida_compatible_postre FALSE)
+        (bind $?estilos_bebida (send ?bebida get-Conjunta_con_estilo))
+
+        (bind $?estilos_primero (send (send ?primero get-plato) get-Es_de_estilo))
+        
+        (if (eq (length$ $?estilos_primero) 0) then
+            (bind ?bebida_compatible_primero TRUE)
+            )
+        (progn$ (?estilo $?estilos_bebida)
+            (if (member ?estilo $?estilos_primero) then
+                (bind ?bebida_compatible_primero TRUE)
+                (break)
+            )
+            
+        )
+
+
+        (bind $?estilos_segundo (send (send ?segundo get-plato) get-Es_de_estilo))
+        
+        (if (eq (length$ $?estilos_segundo) 0) then
+            (bind ?bebida_compatible_segundo TRUE)
+            )
+        (progn$ (?estilo $?estilos_bebida)
+            (if (member ?estilo $?estilos_segundo) then
+                (bind ?bebida_compatible_segundo TRUE)
+                (break)
+            )
+            
+        )
+
+
+        (bind $?estilos_postre (send (send ?postre get-plato) get-Es_de_estilo))
+        
+        (if (eq (length$ $?estilos_postre) 0) then
+            (bind ?bebida_compatible_postre TRUE)
+            )
+        (progn$ (?estilo $?estilos_bebida)
+            (if (member ?estilo $?estilos_postre) then
+                (bind ?bebida_compatible_postre TRUE)
+                (break)
+            )
+            
+        )
+
+        (if (and ?bebida_compatible_postre (and ?bebida_compatible_primero ?bebida_compatible_segundo)) then 
+            ;(printout t "Bebida " ?bebida " es compatible con " (send ?primero get-plato) "," (send ?segundo get-plato) " y " (send ?postre get-plato) "? " ?bebida_compatible_primero " /// ") ;DEBUG GIGANTE
+            (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida) (cohesion ?cohesion_menu)))
+            )
+        
     )
     (retract ?fact)
 )
