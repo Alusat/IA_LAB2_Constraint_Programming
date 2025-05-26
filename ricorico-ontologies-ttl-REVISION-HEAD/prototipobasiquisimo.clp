@@ -573,7 +573,7 @@
 
 ;HEYNAU
 (deffunction MAIN::imprimir_menu (?menu_actual ?i ?nComensales)
-    (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
+    (bind $?bebidas (send ?menu_actual get-Menu/plato_bebida))
     (bind $?primeros (send ?menu_actual get-Primero))
     (bind $?segundos (send ?menu_actual get-Segundo))
     (bind $?postres (send ?menu_actual get-Postre))
@@ -1278,17 +1278,16 @@
     (bind ?menu_2 nil) 
     (bind ?menu_3 nil)
 
+    (bind ?bebida1 nil)
     (bind ?primero1 nil)
     (bind ?segundo1 nil)
     (bind ?postre1 nil)
 
+    (bind ?bebida2 nil)
     (bind ?primero2 nil)
     (bind ?segundo2 nil)
     (bind ?postre2 nil)
 
-    (bind ?primero3 nil)
-    (bind ?segundo3 nil)
-    (bind ?postre3 nil)
 
     (bind ?menu2_distinto_a_1 FALSE)
     (bind ?menu3_distinto_a_2 FALSE)
@@ -1296,6 +1295,8 @@
     (bind ?cohesion_buscada 9)
     (while (>= ?cohesion_buscada 0) do ; uso un while porque con el loop for count no puedes decrementar, sus muertos
         (bind $?menus_con_cohesion_actual (create$))
+
+      
 
         (loop-for-count (?idx_menu 1 (length$ $?todos_los_menus)) do
             (bind ?menu_actual (nth$ ?idx_menu $?todos_los_menus))
@@ -1315,6 +1316,7 @@
                 (if (and (eq ?menu_2 nil) (not (eq ?menu_1 nil))) then
                     (bind ?menu_2 ?menu_actual)
 
+                    (bind ?bebida2 (send ?menu_2 get-Menu/plato_bebida))
                     (bind ?primero2 (send ?menu_2 get-Primero))
                     (bind ?segundo2 (send ?menu_2 get-Segundo))
                     (bind ?postre2 (send ?menu_2 get-Postre))
@@ -1323,6 +1325,7 @@
                 (if (eq ?menu_1 nil) then
                     (bind ?menu_1 ?menu_actual)
 
+                    (bind ?bebida1 (send ?menu_1 get-Menu/plato_bebida))
                     (bind ?primero1 (send ?menu_1 get-Primero))
                     (bind ?segundo1 (send ?menu_1 get-Segundo))
                     (bind ?postre1 (send ?menu_1 get-Postre))
@@ -1330,6 +1333,7 @@
                 
 
                 (if (and (eq ?menu2_distinto_a_1 FALSE) (not (eq ?menu_2 nil))) then ; si el actual es distinto al 1, lo asignamos al 2
+                    (bind ?bebida_act (send ?menu_actual get-Menu/plato_bebida))
                     (bind ?primero_act (send ?menu_actual get-Primero))
                     (bind ?segundo_act (send ?menu_actual get-Segundo))
                     (bind ?postre_act (send ?menu_actual get-Postre))
@@ -1339,15 +1343,18 @@
                     
                     (bind ?num_diferencias 0)
 
+                    (if (not (eq ?bebida_act ?bebida1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?primero_act ?primero1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?segundo_act ?segundo1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?postre_act ?postre1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
 
-                    (if (eq ?num_diferencias 3) then
+                    (if (eq ?num_diferencias 4) then
                         (bind ?menu2_distinto_a_1 TRUE)
 
 
                         (bind ?menu_2 ?menu_actual)
+
+                        (bind ?bebida2 (send ?menu_2 get-Menu/plato_bebida))
                         (bind ?primero2 (send ?menu_2 get-Primero))
                         (bind ?segundo2 (send ?menu_2 get-Segundo))
                         (bind ?postre2 (send ?menu_2 get-Postre))
@@ -1357,6 +1364,7 @@
                 )
 
                 (if (and (eq ?menu3_distinto_a_2 FALSE) (not (eq ?menu_3 nil))) then ; si el actual es distinto al 2, lo asignamos al 3
+                    (bind ?bebida_act (send ?menu_actual get-Menu/plato_bebida))
                     (bind ?primero_act (send ?menu_actual get-Primero))
                     (bind ?segundo_act (send ?menu_actual get-Segundo))
                     (bind ?postre_act (send ?menu_actual get-Postre))
@@ -1366,13 +1374,14 @@
                     
                     (bind ?num_diferencias 0)
 
+                    (if (and (not (eq ?bebida_act ?bebida2)) (not (eq ?bebida_act ?bebida1)) ) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?primero_act ?primero2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?segundo_act ?segundo2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?postre_act ?postre2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
 
 
 
-                    (if (eq ?num_diferencias 3) then
+                    (if (eq ?num_diferencias 4) then
 
 
                     
