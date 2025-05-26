@@ -1201,7 +1201,8 @@
         
         (if (eq (length$ $?estilos_primero) 0) then
             (bind ?bebida_compatible_primero TRUE)
-            )
+        )
+        
         (progn$ (?estilo $?estilos_bebida)
             (if (member ?estilo $?estilos_primero) then
                 (bind ?bebida_compatible_primero TRUE)
@@ -1215,7 +1216,8 @@
         
         (if (eq (length$ $?estilos_segundo) 0) then
             (bind ?bebida_compatible_segundo TRUE)
-            )
+        )
+
         (progn$ (?estilo $?estilos_bebida)
             (if (member ?estilo $?estilos_segundo) then
                 (bind ?bebida_compatible_segundo TRUE)
@@ -1229,7 +1231,8 @@
         
         (if (eq (length$ $?estilos_postre) 0) then
             (bind ?bebida_compatible_postre TRUE)
-            )
+        )
+
         (progn$ (?estilo $?estilos_bebida)
             (if (member ?estilo $?estilos_postre) then
                 (bind ?bebida_compatible_postre TRUE)
@@ -1305,7 +1308,7 @@
     (bind ?precio_intermedio2 0)
     (bind ?diferencia (- ?precioMax ?precioMin))
     
-    (if (> ?diferencia 30) then ; diferencia como máximo 10, que si no puedes poner min 1 y max 10000 no creamos menus de + de 50 euros
+    (if (> ?diferencia 30) then ; diferencia entre intervalos como máximo 10, que si no puedes poner min 1 y max 10000 no creamos menus de + de 50 euros
         (bind ?diferencia 10)
     )
 
@@ -1327,6 +1330,20 @@
     (bind ?menu_2 nil) 
     (bind ?menu_3 nil)
 
+    (bind ?primero1 nil)
+    (bind ?segundo1 nil)
+    (bind ?postre1 nil)
+
+    (bind ?primero2 nil)
+    (bind ?segundo2 nil)
+    (bind ?postre2 nil)
+
+    (bind ?primero3 nil)
+    (bind ?segundo3 nil)
+    (bind ?postre3 nil)
+
+    (bind ?menu2_distinto_a_1 FALSE)
+    (bind ?menu3_distinto_a_2 FALSE)
     
     (bind ?cohesion_buscada 9)
     (while (>= ?cohesion_buscada 0) do ; uso un while porque con el loop for count no puedes decrementar, sus muertos
@@ -1341,18 +1358,91 @@
                 ;(bind $?menus_con_cohesion_actual (insert$ $?menus_con_cohesion_actual (+ (length$ $?menus_con_cohesion_actual) 1) ?menu_actual))
 
                 (bind ?precio_del_menu (send ?menu_actual get-Precio))
-                
+
                 (if (and (eq ?menu_3 nil) (not (eq ?menu_2 nil))) then
                     (bind ?menu_3 ?menu_actual)
+                    
                 )
 
+                
                 (if (and (eq ?menu_2 nil) (not (eq ?menu_1 nil))) then
                     (bind ?menu_2 ?menu_actual)
+
+                    (bind ?primero2 (send ?menu_2 get-Primero))
+                    (bind ?segundo2 (send ?menu_2 get-Segundo))
+                    (bind ?postre2 (send ?menu_2 get-Postre))
                 )
 
                 (if (eq ?menu_1 nil) then
                     (bind ?menu_1 ?menu_actual)
+
+                    (bind ?primero1 (send ?menu_1 get-Primero))
+                    (bind ?segundo1 (send ?menu_1 get-Segundo))
+                    (bind ?postre1 (send ?menu_1 get-Postre))
                 )
+                
+
+                (if (and (eq ?menu2_distinto_a_1 FALSE) (not (eq ?menu_2 nil))) then ; si el actual es distinto al 1, lo asignamos al 2
+                    (bind ?primero_act (send ?menu_actual get-Primero))
+                    (bind ?segundo_act (send ?menu_actual get-Segundo))
+                    (bind ?postre_act (send ?menu_actual get-Postre))
+
+                    ;(printout t "AAAAAJJ " crlf)
+
+                    ;(printout t "PRIMERO ACTUAL " ?primero_act " Y EL PRIMERO 1 " ?primero1 crlf)
+                    ;(printout t "SEGUNDO ACTUAL " ?segundo_act " Y EL SEGUNDO 1 " ?segundo1 crlf)
+                    ;(printout t "POSTRE ACTUAL " ?postre_act " Y EL POSTRE 1 " ?postre1 crlf)
+                    
+                    (bind ?num_diferencias 0)
+
+                    (if (not (eq ?primero_act ?primero1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
+                    (if (not (eq ?segundo_act ?segundo1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
+                    (if (not (eq ?postre_act ?postre1)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
+
+                    (if (eq ?num_diferencias 3) then
+                        (bind ?menu2_distinto_a_1 TRUE)
+
+                        ;(printout t "ACTUAL Y SEGUNDO SON DISTINTOS" crlf)
+
+                        (bind ?menu_2 ?menu_actual)
+                        (bind ?primero2 (send ?menu_2 get-Primero))
+                        (bind ?segundo2 (send ?menu_2 get-Segundo))
+                        (bind ?postre2 (send ?menu_2 get-Postre))
+                    )
+
+
+                )
+
+                (if (and (eq ?menu3_distinto_a_2 FALSE) (not (eq ?menu_3 nil))) then ; si el actual es distinto al 2, lo asignamos al 3
+                    (bind ?primero_act (send ?menu_actual get-Primero))
+                    (bind ?segundo_act (send ?menu_actual get-Segundo))
+                    (bind ?postre_act (send ?menu_actual get-Postre))
+
+                    (printout t "PRIMERO ACTUAL " ?primero_act " Y EL PRIMERO 2 " ?primero2 crlf)
+                    (printout t "SEGUNDO ACTUAL " ?segundo_act " Y EL SEGUNDO 2 " ?segundo2 crlf)
+                    (printout t "POSTRE ACTUAL " ?postre_act " Y EL POSTRE 2 " ?postre2 crlf)
+                    
+                    
+                    (bind ?num_diferencias 0)
+
+                    (if (not (eq ?primero_act ?primero2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
+                    (if (not (eq ?segundo_act ?segundo2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
+                    (if (not (eq ?postre_act ?postre2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
+
+                    (printout t ?num_diferencias crlf)
+
+                    (if (eq ?num_diferencias 3) then
+
+                        (printout t "ACTUAL Y SEGUNDO SON DISTINTOS" crlf)
+                    
+                        (bind ?menu3_distinto_a_2 TRUE)
+
+                        (bind ?menu_3 ?menu_actual)
+                    )
+
+
+                )
+                
                                 
                 ; ASIGNAMOS MENU BARATO MEDIO Y CARO
                 (if (not (eq ?intervalo 0)) then 
@@ -1382,50 +1472,13 @@
 
     (if (or (eq ?menu_barato nil) (eq ?menu_caro nil) (eq ?menu_medio nil) ) then
        (imprimir_menu ?menu_1 "1" ?nComensales)
-        (imprimir_menu ?menu_2 "2" ?nComensales) ; no he encontrado menus en los 3 rangos
-        (imprimir_menu ?menu_3 "3" ?nComensales)
+        (if (eq ?menu2_distinto_a_1 TRUE) then (imprimir_menu ?menu_2 "2" ?nComensales)) ; no he encontrado menus en los 3 rangos
+        (if (eq ?menu3_distinto_a_2 TRUE) then (imprimir_menu ?menu_3 "3" ?nComensales))
     else
         (imprimir_menu ?menu_barato "Barato" ?nComensales)
         (imprimir_menu ?menu_medio "Medio" ?nComensales)
         (imprimir_menu ?menu_caro "Caro" ?nComensales)
     )
-
-
-    ; (loop-for-count (?i 1 (length$ $?menus_maxima_cohesion_encontrada)) do
-    ;     (bind ?menu_actual (nth$ ?i $?menus_maxima_cohesion_encontrada))
-    ;     (imprimir_menu ?menu_actual ?i) ; LO HE PUESTO TODO EN UNA FUNCIÓN, DEJO LO DE ABAJO COMENTADO POR SI ACASO
-    ;     ; (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
-    ;     ; (bind $?primeros (send ?menu_actual get-Primero))
-    ;     ; (bind $?segundos (send ?menu_actual get-Segundo))
-    ;     ; (bind $?postres (send ?menu_actual get-Postre))
-    ;     ; (bind ?precio (send ?menu_actual get-Precio))
-    ;     ; (bind ?cohesion (send ?menu_actual get-cohesion))
-
-    ;     ; (printout t crlf "--- MENU " ?i " ---" crlf)
-    ;     ; (if (> (length$ $?bebidas) 0)
-    ;     ;     then
-    ;     ;     (bind ?bebida_menu (nth$ 1 $?bebidas))
-    ;     ;     (printout t "Bebida: " (instance-name ?bebida_menu) crlf)
-    ;     ; )
-    ;     ; (if (> (length$ $?primeros) 0)
-    ;     ;     then
-    ;     ;     (bind ?plato_primero (nth$ 1 $?primeros))
-    ;     ;     (printout t "Primero: " (instance-name ?plato_primero) crlf)
-    ;     ; )
-    ;     ; (if (> (length$ $?segundos) 0)
-    ;     ;     then
-    ;     ;     (bind ?plato_segundo (nth$ 1 $?segundos))
-    ;     ;     (printout t "Segundo: " (instance-name ?plato_segundo) crlf)
-    ;     ; )
-    ;     ; (if (> (length$ $?postres) 0)
-    ;     ;     then
-    ;     ;     (bind ?plato_postre (nth$ 1 $?postres))
-    ;     ;     (printout t "Postre: " (instance-name ?plato_postre) crlf)
-    ;     ; )
-    ;     ; (printout t "Precio: " ?precio " euros" crlf)
-    ;     ; (printout t "Cohesion: " ?cohesion crlf)
-    ;     ; (printout t "-------------------" crlf)
-    ; )
 )
 
 (reset)
