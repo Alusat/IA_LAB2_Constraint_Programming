@@ -150,6 +150,101 @@
         (create-accessor read-write))
 )
 
+(definstances nuevos_ingredientes
+        ;; Aceites, aliños y especias
+        ([Aceite_de_Oliva] of Ingrediente)
+        ([Canela] of Ingrediente)
+        ([Alcaparras] of Ingrediente)
+        ([Rúcula] of Ingrediente)
+        ([Vinagre] of Ingrediente)
+        ([Albahaca] of Ingrediente)
+        ([Sal] of Ingrediente)
+        ([Pimienta] of Ingrediente)
+        ([Azafrán] of Ingrediente)
+        ([Curry] of Ingrediente)
+        ([Gengibre] of Ingrediente)
+        ([Romero] of Ingrediente)
+        ([Hierbas_fin] of Ingrediente)
+
+        ([Maicena] of Ingrediente)
+        ([Cacao] of Ingrediente)
+
+        ;; Frutas, verduras y hortalizas
+        ([Pepino] of Ingrediente)
+        ([Pimiento] of Ingrediente)
+        ([Pimiento_verde] of Ingrediente)
+        ([Pan_duro] of Ingrediente)
+        ([Calabacín] of Ingrediente)     ;; si lo usas en cremas, etc.
+        ([Limón] of Ingrediente)
+        ([Gamba] of Ingrediente)
+
+        ;; Proteínas y derivados animales
+        ([Ternera] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Atún] of Ingrediente 
+            (restricción_ingrediente [Vegano])
+        )
+        ([Jamón_Serrano] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Pollo] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Marisco] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Lubina] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Entrecot] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Mascarpone] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Vegetariano])
+        )
+        ([Yema_de_huevo] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Huevo_alergia])
+        )
+        ([Huevo] of Ingrediente 
+            (restricción_ingrediente [Vegano] [Huevo_alergia])
+        )
+
+        ;; Lácteos y derivados
+        ([Parmesano] of Ingrediente 
+            (restricción_ingrediente [Lactosa_intolerante])
+        )
+        ([Queso_crema] of Ingrediente      
+            (restricción_ingrediente [Lactosa_intolerante]) 
+        )
+        ([Mantequilla] of Ingrediente 
+             (restricción_ingrediente [Lactosa_intolerante])
+        )
+        ([Leche_de_coco] of Ingrediente 
+             (restricción_ingrediente [Lactosa_intolerante])
+        )
+
+        ;; Harinas, granos y sus elaborados
+        ([Arroz] of Ingrediente 
+            (restricción_ingrediente [Celiaco])
+        )
+        ([Pan_tostado] of Ingrediente 
+            (restricción_ingrediente [Celiaco])
+        )
+        ([Galletas] of Ingrediente 
+            (restricción_ingrediente [Celiaco])
+        )
+
+
+        ;; Dulces y frutos secos
+
+        ([Nueces] of Ingrediente)
+
+        ;; Otros
+        ([Caldo_de_verduras] of Ingrediente)
+        ([Caldo_de_caldo] of Ingrediente) ;; si usas distinto caldo
+)
+
 (definstances instances
     ([Agua] of Bebida
          (Alcohol?  "false")
@@ -192,9 +287,7 @@
         (Posicion_menu 2)
     )
 
-    ([Pollo] of Ingrediente
-        (restricción_ingrediente [Vegetariano] [Vegano])
-    )
+
 
     ([Lechuga] of Ingrediente
         (Disponible_durante [Verano] [Primavera])
@@ -296,12 +389,6 @@
         (restricción_ingrediente [Celiaco])
     )
     
-    ([Arroz] of Ingrediente
-    )
-    
-    ([Huevo] of Ingrediente
-        (restricción_ingrediente [Vegano])
-    )
     
     ([Pescado] of Ingrediente
         (restricción_ingrediente [Vegetariano] [Vegano])
@@ -435,8 +522,7 @@
     ([Azúcar] of Ingrediente
     )
 
-    ([Mantequilla] of Ingrediente
-    )
+
 
     
     ([Zanahoria] of Ingrediente
@@ -475,7 +561,1180 @@
     
     ([Clásico] of Estilo_comida
     )
+
+    
+    ;; Instancias mejoradas: 100 platos con estilo, país y estación
+    ([Brownie_de_chocolate_1] of Plato
+        (Plato_ingrediente [Huevo] [Chocolate] [Azúcar])
+        (Precio 26)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Lubina_a_la_sal_2] of Plato
+        (Plato_ingrediente [Sal] [Lubina] [Aceite_de_Oliva] [Hierbas_fin])
+        (Precio 37)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Entrecot_a_la_plancha_3] of Plato
+        (Plato_ingrediente [Entrecot] [Pimienta])
+        (Precio 11)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Tarta_de_queso_4] of Plato
+        (Plato_ingrediente [Queso_crema] [Mantequilla] [Galletas])
+        (Precio 19)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Brownie_de_chocolate_5] of Plato
+        (Plato_ingrediente [Huevo] [Azúcar] [Mantequilla])
+        (Precio 23)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Paella_marinera_6] of Plato
+        (Plato_ingrediente [Marisco] [Calamar] [Azafrán] [Gamba])
+        (Precio 28)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Salmorejo_7] of Plato
+        (Plato_ingrediente [Jamón_Serrano] [Pan_duro] [Tomate])
+        (Precio 31)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Coulant_de_chocolate_8] of Plato
+        (Plato_ingrediente [Harina] [Huevo] [Mantequilla])
+        (Precio 5)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Coulant_de_chocolate_9] of Plato
+        (Plato_ingrediente [Harina] [Mantequilla] [Huevo] [Chocolate])
+        (Precio 33)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Carpaccio_de_ternera_10] of Plato
+        (Plato_ingrediente [Parmesano] [Limón] [Rúcula] [Aceite_de_Oliva])
+        (Precio 34)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Pollo_al_curry_11] of Plato
+        (Plato_ingrediente [Pollo]  [Leche_de_coco])
+        (Precio 16)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Tarta_de_queso_12] of Plato
+        (Plato_ingrediente [Azúcar] [Galletas] [Queso_crema])
+        (Precio 7)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Lubina_a_la_sal_13] of Plato
+        (Plato_ingrediente [Sal] [Hierbas_fin] [Limón])
+        (Precio 12)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Natillas_14] of Plato
+        (Plato_ingrediente [Canela] [Yema_de_huevo] [Leche] [Maicena])
+        (Precio 14)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Gazpacho_andaluz_15] of Plato
+        (Plato_ingrediente [Tomate] [Pepino] [Ajo] [Aceite_de_Oliva] [Pimiento_verde])
+        (Precio 36)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_16] of Plato
+        (Plato_ingrediente [Rúcula] [Limón] [Aceite_de_Oliva])
+        (Precio 23)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Carpaccio_de_ternera_17] of Plato
+        (Plato_ingrediente [Parmesano] [Ternera] [Aceite_de_Oliva])
+        (Precio 21)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Entrecot_a_la_plancha_18] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Pimienta] [Entrecot])
+        (Precio 23)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Natillas_19] of Plato
+        (Plato_ingrediente [Canela] [Yema_de_huevo] [Leche] [Maicena])
+        (Precio 35)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Natillas_20] of Plato
+        (Plato_ingrediente [Canela] [Azúcar] [Leche] [Maicena])
+        (Precio 25)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Gazpacho_andaluz_21] of Plato
+        (Plato_ingrediente [Tomate] [Pan_duro] [Pepino] [Aceite_de_Oliva])
+        (Precio 27)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Paella_marinera_22] of Plato
+        (Plato_ingrediente [Marisco] [Calamar] [Arroz])
+        (Precio 36)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Carpaccio_de_ternera_23] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Ternera] [Parmesano] [Rúcula] [Limón])
+        (Precio 39)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Brownie_de_chocolate_24] of Plato
+        (Plato_ingrediente [Mantequilla] [Harina] [Nueces])
+        (Precio 18)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Ensalada_de_tomate_25] of Plato
+        (Plato_ingrediente [Vinagre] [Tomate] [Albahaca] [Pimienta] [Aceite_de_Oliva])
+        (Precio 36)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Carpaccio_de_ternera_26] of Plato
+        (Plato_ingrediente [Limón] [Rúcula] [Ternera] [Parmesano])
+        (Precio 40)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Natillas_27] of Plato
+        (Plato_ingrediente [Azúcar] [Maicena] [Leche])
+        (Precio 12)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Coulant_de_chocolate_28] of Plato
+        (Plato_ingrediente [Azúcar] [Chocolate] [Huevo] [Harina] [Mantequilla])
+        (Precio 25)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Ensalada_de_tomate_29] of Plato
+        (Plato_ingrediente [Pimienta] [Tomate] [Vinagre] [Sal])
+        (Precio 31)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_30] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Ternera] [Rúcula] [Limón])
+        (Precio 14)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Natillas_31] of Plato
+        (Plato_ingrediente [Maicena] [Canela] [Azúcar])
+        (Precio 32)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Tarta_de_queso_32] of Plato
+        (Plato_ingrediente [Mantequilla] [Azúcar] [Galletas] [Huevo])
+        (Precio 9)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Brownie_de_chocolate_33] of Plato
+        (Plato_ingrediente [Huevo] [Mantequilla] [Nueces] [Chocolate])
+        (Precio 40)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Brownie_de_chocolate_34] of Plato
+        (Plato_ingrediente [Azúcar] [Mantequilla] [Chocolate])
+        (Precio 20)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Pollo_al_curry_35] of Plato
+        (Plato_ingrediente [Leche_de_coco] [Pollo] [Curry] )
+        (Precio 34)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Coulant_de_chocolate_36] of Plato
+        (Plato_ingrediente [Azúcar] [Mantequilla] [Chocolate])
+        (Precio 11)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Gazpacho_andaluz_37] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Pimiento_verde] [Pan_duro])
+        (Precio 15)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Solomillo_de_ternera_38] of Plato
+        (Plato_ingrediente [Pimienta] [Mantequilla])
+        (Precio 34)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_39] of Plato
+        (Plato_ingrediente [Parmesano] [Limón] [Ternera])
+        (Precio 5)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Tarta_de_queso_40] of Plato
+        (Plato_ingrediente [Huevo] [Queso_crema] [Mantequilla] [Azúcar] [Galletas])
+        (Precio 5)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Gazpacho_andaluz_41] of Plato
+        (Plato_ingrediente [Ajo] [Pan_duro] [Pepino] [Pimiento_verde] [Aceite_de_Oliva])
+        (Precio 6)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Tiramisú_42] of Plato
+        (Plato_ingrediente [Mascarpone] [Bizcochos] [Huevo] [Cacao] [Café])
+        (Precio 38)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Coulant_de_chocolate_43] of Plato
+        (Plato_ingrediente [Huevo] [Azúcar] [Harina] [Chocolate])
+        (Precio 25)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Tartar_de_atún_44] of Plato
+        (Plato_ingrediente [Cebolla] [Alcaparras] [Aceite_de_Oliva] [Atún] [Yema_de_huevo])
+        (Precio 30)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Tartar_de_atún_45] of Plato
+        (Plato_ingrediente [Cebolla] [Aceite_de_Oliva] [Alcaparras] [Yema_de_huevo])
+        (Precio 25)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Natillas_46] of Plato
+        (Plato_ingrediente [Canela] [Yema_de_huevo] [Leche] [Azúcar])
+        (Precio 19)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Gazpacho_andaluz_47] of Plato
+        (Plato_ingrediente [Pepino] [Pimiento_verde] [Pan_duro] [Aceite_de_Oliva] [Ajo])
+        (Precio 7)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Pollo_al_curry_48] of Plato
+        (Plato_ingrediente [Pollo]  [Curry] [Cebolla])
+        (Precio 21)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Ensalada_de_tomate_49] of Plato
+        (Plato_ingrediente [Tomate] [Albahaca] [Aceite_de_Oliva])
+        (Precio 24)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_50] of Plato
+        (Plato_ingrediente [Parmesano] [Rúcula] [Limón] [Ternera])
+        (Precio 9)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Solomillo_de_ternera_51] of Plato
+        (Plato_ingrediente [Ternera] [Mantequilla] [Pimienta])
+        (Precio 40)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Pollo_al_curry_52] of Plato
+        (Plato_ingrediente [Leche_de_coco]  [Curry])
+        (Precio 28)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Gazpacho_andaluz_53] of Plato
+        (Plato_ingrediente [Pimiento_verde] [Ajo] [Pan_duro])
+        (Precio 19)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Ensalada_de_tomate_54] of Plato
+        (Plato_ingrediente [Sal] [Vinagre] [Tomate] [Pimienta])
+        (Precio 11)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Lubina_a_la_sal_55] of Plato
+        (Plato_ingrediente [Limón] [Sal] [Lubina] [Hierbas_fin] [Aceite_de_Oliva])
+        (Precio 21)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Solomillo_de_ternera_56] of Plato
+        (Plato_ingrediente [Sal] [Mantequilla] [Romero])
+        (Precio 7)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Gazpacho_andaluz_57] of Plato
+        (Plato_ingrediente [Tomate] [Pepino] [Ajo])
+        (Precio 39)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Tarta_de_queso_58] of Plato
+        (Plato_ingrediente [Huevo] [Queso_crema] [Mantequilla])
+        (Precio 37)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Tartar_de_atún_59] of Plato
+        (Plato_ingrediente [Yema_de_huevo] [Aceite_de_Oliva] [Atún] [Cebolla])
+        (Precio 35)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Tiramisú_60] of Plato
+        (Plato_ingrediente [Bizcochos] [Cacao] [Mascarpone] [Huevo] [Café])
+        (Precio 12)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Brownie_de_chocolate_61] of Plato
+        (Plato_ingrediente [Chocolate] [Huevo] [Harina] [Mantequilla])
+        (Precio 10)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Solomillo_de_ternera_62] of Plato
+        (Plato_ingrediente [Pimienta] [Romero] [Ternera])
+        (Precio 16)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Salmorejo_63] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Jamón_Serrano] [Pan_duro] [Ajo])
+        (Precio 20)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Salmorejo_64] of Plato
+        (Plato_ingrediente [Ajo] [Jamón_Serrano] [Tomate] [Pan_duro])
+        (Precio 21)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Lubina_a_la_sal_65] of Plato
+        (Plato_ingrediente [Lubina] [Aceite_de_Oliva] [Hierbas_fin] [Sal] [Limón])
+        (Precio 19)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Gazpacho_andaluz_66] of Plato
+        (Plato_ingrediente [Pimiento_verde] [Ajo] [Aceite_de_Oliva])
+        (Precio 25)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Tiramisú_67] of Plato
+        (Plato_ingrediente [Cacao] [Café] [Huevo] [Bizcochos])
+        (Precio 9)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Tiramisú_68] of Plato
+        (Plato_ingrediente [Mascarpone] [Cacao] [Café] [Huevo])
+        (Precio 8)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Gazpacho_andaluz_69] of Plato
+        (Plato_ingrediente [Ajo] [Pepino] [Tomate])
+        (Precio 7)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Solomillo_de_ternera_70] of Plato
+        (Plato_ingrediente [Romero] [Ternera] [Mantequilla] [Pimienta])
+        (Precio 30)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Brownie_de_chocolate_71] of Plato
+        (Plato_ingrediente [Nueces] [Chocolate] [Azúcar] [Harina] [Huevo])
+        (Precio 9)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Natillas_72] of Plato
+        (Plato_ingrediente [Leche] [Canela] [Azúcar] [Yema_de_huevo])
+        (Precio 40)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Tartar_de_atún_73] of Plato
+        (Plato_ingrediente [Alcaparras] [Yema_de_huevo] [Cebolla])
+        (Precio 38)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Carpaccio_de_ternera_74] of Plato
+        (Plato_ingrediente [Parmesano] [Rúcula] [Limón] [Ternera])
+        (Precio 30)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Tartar_de_atún_75] of Plato
+        (Plato_ingrediente [Alcaparras] [Aceite_de_Oliva] [Yema_de_huevo] [Atún])
+        (Precio 6)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Tarta_de_queso_76] of Plato
+        (Plato_ingrediente [Galletas] [Queso_crema] [Huevo] [Mantequilla])
+        (Precio 38)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Entrecot_a_la_plancha_77] of Plato
+        (Plato_ingrediente [Pimienta] [Entrecot])
+        (Precio 32)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Lubina_a_la_sal_78] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Lubina] [Hierbas_fin] [Sal] [Limón])
+        (Precio 22)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Salmorejo_79] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Ajo] [Tomate] [Pan_duro] [Jamón_Serrano])
+        (Precio 32)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_80] of Plato
+        (Plato_ingrediente [Parmesano] [Ternera] [Limón])
+        (Precio 29)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_81] of Plato
+        (Plato_ingrediente [Limón] [Rúcula] [Parmesano] [Aceite_de_Oliva])
+        (Precio 29)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Natillas_82] of Plato
+        (Plato_ingrediente [Maicena] [Azúcar] [Canela] [Yema_de_huevo] [Leche])
+        (Precio 32)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Salmorejo_83] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Ajo] [Jamón_Serrano] [Pan_duro] [Tomate])
+        (Precio 15)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Solomillo_de_ternera_84] of Plato
+        (Plato_ingrediente [Mantequilla] [Sal])
+        (Precio 16)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        
+    )
+
+    ([Carpaccio_de_ternera_85] of Plato
+        (Plato_ingrediente [Rúcula] [Parmesano] [Limón])
+        (Precio 11)
+        (Complejo? TRUE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Paella_marinera_86] of Plato
+        (Plato_ingrediente [Arroz] [Marisco] [Calamar] [Azafrán] [Pimiento])
+        (Precio 22)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Pollo_al_curry_87] of Plato
+        (Plato_ingrediente  [Curry] [Leche_de_coco] [Cebolla] [Pollo])
+        (Precio 8)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Brownie_de_chocolate_88] of Plato
+        (Plato_ingrediente [Harina] [Nueces] [Huevo] [Azúcar] [Mantequilla])
+        (Precio 29)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Entrecot_a_la_plancha_89] of Plato
+        (Plato_ingrediente [Pimienta] [Aceite_de_Oliva])
+        (Precio 21)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Tartar_de_atún_90] of Plato
+        (Plato_ingrediente [Yema_de_huevo] [Alcaparras] [Cebolla])
+        (Precio 8)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Paella_marinera_91] of Plato
+        (Plato_ingrediente [Marisco] [Gamba] [Calamar])
+        (Precio 24)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Lubina_a_la_sal_92] of Plato
+        (Plato_ingrediente [Lubina] [Hierbas_fin] [Sal])
+        (Precio 23)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Carpaccio_de_ternera_93] of Plato
+        (Plato_ingrediente [Aceite_de_Oliva] [Rúcula] [Limón] [Ternera] [Parmesano])
+        (Precio 25)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        (Pais_de_procedencia [Francia])
+        
+    )
+
+    ([Lubina_a_la_sal_94] of Plato
+        (Plato_ingrediente [Hierbas_fin] [Aceite_de_Oliva] [Sal])
+        (Precio 13)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 2)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [España])
+        
+    )
+
+    ([Salmorejo_95] of Plato
+        (Plato_ingrediente [Pan_duro] [Ajo] [Jamón_Serrano] [Tomate])
+        (Precio 17)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Sibarita])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    ([Coulant_de_chocolate_96] of Plato
+        (Plato_ingrediente [Azúcar] [Mantequilla] [Harina])
+        (Precio 19)
+        (Complejo? FALSE)
+        (Textura CREMOSO)
+        (Caliente? FALSE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Ensalada_de_tomate_97] of Plato
+        (Plato_ingrediente [Sal] [Tomate] [Albahaca] [Vinagre] [Aceite_de_Oliva])
+        (Precio 37)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Estados_Unidos])
+        
+    )
+
+    ([Gazpacho_andaluz_98] of Plato
+        (Plato_ingrediente [Pimiento_verde] [Pepino] [Aceite_de_Oliva])
+        (Precio 16)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? FALSE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Moderno])
+        
+    )
+
+    ([Ensalada_de_tomate_99] of Plato
+        (Plato_ingrediente [Vinagre] [Aceite_de_Oliva] [Tomate])
+        (Precio 34)
+        (Complejo? TRUE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 1)
+        (Es_de_estilo [Clásico])
+        
+    )
+
+    ([Tarta_de_queso_100] of Plato
+        (Plato_ingrediente [Huevo] [Mantequilla] [Galletas] [Queso_crema] [Azúcar])
+        (Precio 38)
+        (Complejo? FALSE)
+        (Textura CRUJIENTE)
+        (Caliente? TRUE)
+        (Posicion_menu 3)
+        (Es_de_estilo [Moderno])
+        (Pais_de_procedencia [Italia])
+        
+    )
+
+    
 )
+
+
 
 
 
@@ -1257,9 +2516,6 @@
     (bind ?precio_intermedio2 0)
     (bind ?diferencia (- ?precioMax ?precioMin))
     
-    (if (> ?diferencia 30) then ; diferencia entre intervalos como máximo 10, que si no puedes poner min 1 y max 10000 no creamos menus de + de 50 euros
-        (bind ?diferencia 10)
-    )
 
     (if (>= ?diferencia 3) then
         
