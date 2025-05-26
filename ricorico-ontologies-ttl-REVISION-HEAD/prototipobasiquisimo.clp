@@ -541,7 +541,6 @@
 ;para cuando se tenga que preguntar de una lista de opciones
 ;NOTA MÍA (SAMBHAV) TENDRÍA QUE AÑADIR PARÁMETRO DE ENTRADA QUE SEA UN BOOL PARA SABER SI DEBE DE HABER SOLO 1 O VARIOS PARÁMETROS DE ENTRADA
 (deffunction MAIN::preguntar_lista (?pregunta ?lista)
-     (printout t "PREGUNTANDO LISTA" crlf)
      (while TRUE do
         (printout t ?pregunta crlf)
         (printout t " (Escoge las opciones que quieras, puedes no responder nada)" crlf)
@@ -663,7 +662,6 @@
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setRestricciones)
     =>
-     (printout t "PREGUNTANDO RESTRICCIONES" crlf)
         (bind $?nombre_todas_las_restricciones (create$))
         (bind $?lista_todas_las_restricciones (find-all-instances ((?restriccion Restricciones)) TRUE))
 
@@ -691,8 +689,6 @@
     ?fact2 <- (setPaises)
     ?fact3 <- (setEstilosComida)
     =>
-     (printout t "PREGUNTANDO PREFERENCIAS" crlf)
-
     ;PREGUNTAMOS ESTACIÓN ==========================================================================================================
     (bind $?nombre_todas_las_estaciones (create$))
     (bind $?lista_todas_las_estaciones (find-all-instances ((?estacion Estación)) TRUE))
@@ -709,9 +705,7 @@
         (bind ?j (nth$ ?i $?numero_estaciones_escogidas))
         (bind ?estacion_escogida (nth$ ?j $?lista_todas_las_estaciones))
         (bind $?estaciones_escogidas (insert$ $?estaciones_escogidas (+ (length$ $?estaciones_escogidas) 1) ?estacion_escogida))
-    )
-    (printout t "ESTACIONES ESCOGIDAS: " $?estaciones_escogidas crlf)
-        
+    )        
 
     ;PREGUNTAMOS PAISES ==========================================================================================================
     (bind $?nombre_todos_los_paises (create$))
@@ -730,7 +724,6 @@
         (bind ?pais_escogido (nth$ ?j $?lista_todos_los_paises))
         (bind $?paises_escogidos (insert$ $?paises_escogidos (+ (length$ $?paises_escogidos) 1) ?pais_escogido))
     )
-    (printout t "PAISES ESCOGIDOS: " $?paises_escogidos crlf)
         
 
     ;PREGUNTAMOS ESTILOS ==========================================================================================================
@@ -749,9 +742,7 @@
         (bind ?j (nth$ ?i $?numero_estilos_escogidos))
         (bind ?estilo_escogido (nth$ ?j $?lista_todos_los_estilos))
         (bind $?estilos_escogidos (insert$ $?estilos_escogidos (+ (length$ $?estilos_escogidos) 1) ?estilo_escogido))
-    )
-    (printout t "ESTILOS ESCOGIDOS: " $?estilos_escogidos crlf)
-    
+    )    
 
     (modify ?preferencias
         (estacion                      $?estaciones_escogidas)
@@ -766,7 +757,6 @@
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setBebidasAlcoholicas)
     =>
-    (printout t "PREGUNTANDO ALCOHOL" crlf)
     (bind ?finish FALSE)
     (while (eq ?finish FALSE)
         (bind ?respuesta (preguntar "Quieres bebidas alcoholicas en el evento? ||| No(0) ||| Si(1) |||"))
@@ -792,7 +782,6 @@
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setNumeroComensales)
     =>
-    (printout t "PREGUNTANDO COMENSALES" crlf)
     (bind ?finish FALSE)
     (while (eq ?finish FALSE)
         (bind ?respuesta (preguntar "¿Cuántos comensales asistiran al evento? Danos una cifra aproximada."))
@@ -812,7 +801,6 @@
     ?preferencias <- (preferencias-del-cliente)
     ?fact <- (setMaxPrecio)
     =>
-    (printout t "PREGUNTANDO PRECIO MÁXIMO" crlf)
 	(bind ?finish FALSE)
 	(while (eq ?finish FALSE)
 		(bind ?max (preguntar "Indica el maximo precio (euros) que estas dispuesto a pagar por menu"))
@@ -832,7 +820,6 @@
     ?preferencias <- (preferencias-del-cliente (precioMax ?precioMax))
     ?fact <- (setMinPrecio)
     =>
-    (printout t "PREGUNTANDO PRECIO MÍNIMO" crlf)
 	(bind ?finish FALSE)
 	(while (eq ?finish FALSE)
 		(bind ?min (preguntar "Indica el minimo precio (euros) que estas dispuesto a pagar por menu"))
@@ -854,7 +841,6 @@
 (defrule obtener_informacion::debug_hechos
     (declare (salience 5))
     =>
-    (printout t "PARA DEBUGING " crlf)
     (printout t "Hechos presentes:" crlf)
     (facts)
 )
@@ -881,9 +867,6 @@
     ?plato <- (object (is-a Plato))
     (not (instancias_plato_hecha (plato ?plato))) ;para que no vuelva a ejecutarse
         =>
-    (printout t "PODANDO PLATOS" crlf)
-    (printout t "numero comensales " ?numeroComensales crlf)
-    (printout t "Nuestra estacion es esta " $?estaciones_cliente crlf)
     (bind ?cumple_condiciones TRUE)
 
     ;RESTRICCIONES
@@ -908,14 +891,12 @@
     ;ESTACION
 
     ;Miramos las estacione de cada uno
-    (printout t "Queee pasa, estos son mis ingredientes " $?ingredientes_plato  crlf)
 
     
     (if (> (length $?estaciones_cliente) 0) then ;si el cliente no nos dice ninguna estación ess que le da igual
         (progn$ (?ingrediente $?ingredientes_plato)
             (bind $?estaciones_ingrediente (send ?ingrediente get-Disponible_durante))
             
-            (printout t "El ingrediente " ?ingrediente " está en " $?estaciones_ingrediente crlf)
 
             (if (> (length $?estaciones_ingrediente) 0) then ; si un ingrediente tiene el atributo de la lista de estaciones vacía entonces está disponible siempre
                 
@@ -928,7 +909,6 @@
                     )
                 )
                 (if (eq ?esta_la_estacion_preferente FALSE) then 
-                    (printout t "El plato ete " ?plato " no nos sirve" crlf)
                     (bind ?cumple_condiciones FALSE)
                     (break)   
                 )
@@ -958,7 +938,6 @@
         )
 
         (if (eq ?esta_uno_de_los_paises_cliente FALSE) then 
-            (printout t "El plato ete " ?plato " no nos sirve porque no es de los paises " $?paises_cliente crlf)
             (bind ?cumple_condiciones FALSE) 
         )
     )
@@ -982,7 +961,6 @@
         )
 
         (if (eq ?esta_uno_de_los_estilos_cliente FALSE) then 
-            (printout t "El plato ete " ?plato " no nos sirve porque no es de los estilos " $?estilos_comida_clientes crlf)
             (bind ?cumple_condiciones FALSE) 
         )
     )
@@ -992,12 +970,10 @@
     ;NUMERO COMENSALES -> PLATOS COMPLEJOS O NO
     ;Obtenemos complejidad
     (bind ?esComplejo (send ?plato get-Complejo?))
-    (printout t "Plato " (instance-name ?plato) " es complejo? " ?esComplejo crlf)
 
     (if (eq ?esComplejo TRUE) then
         (if (> ?numeroComensales 40) then
             (bind ?cumple_condiciones FALSE)
-            (printout t "Plato " (instance-name ?plato) " demasiado complejo " crlf)
         )
     )
 
@@ -1030,9 +1006,7 @@
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     (not (bebida_considerada (bebida ?bebida_candidata))) ;para no repetir
     (preferencias-del-cliente (bebidasAlcoholicas ?permitir_alcohol))
-    =>
-    (printout t "Evaluando bebida: " (instance-name ?bebida_candidata) " - Alcohol: " ?esAlcholica crlf)
-    
+    =>    
     (bind ?incluir_bebida FALSE)
     (if (eq ?permitir_alcohol 1) then
         ;si se permiten bebidas con alcohol incluir todas
@@ -1045,11 +1019,9 @@
     )
     
     (if (eq ?incluir_bebida TRUE) then
-        (printout t "Añadiendo bebida a lista..." crlf)
         (bind $?bebidas (insert$ $?bebidas (+ (length$ $?bebidas) 1) ?bebida_candidata))
         (modify ?lista_bebidas_candidatas(bebidas $?bebidas))
-    else
-        (printout t "Bebida excluida por restricciones de alcohol" crlf)
+    
     )
     
     (assert (bebida_considerada (bebida ?bebida_candidata)))
@@ -1061,9 +1033,6 @@
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     =>
     (bind $?platos (find-all-instances ((?inst Plato_candidato)) TRUE))
-    (printout t "Tenemos " (length$ $?platos) " platos adecuados" crlf)
-    (printout t "Tenemos " (length$ $?bebidas) " bebidas adecuadas" crlf)
-    (printout t "Generando combinaciones adecuadas" crlf)
 
     
 
@@ -1078,11 +1047,9 @@
                     (bind ?textura_primero (send (send ?primero get-plato) get-Textura))
                     (bind ?textura_segundo (send (send ?segundo get-plato) get-Textura))
 
-                    ;(printout t "hey esta es una textura " ?textura_primero " y esta otra " ?textura_segundo crlf)
 
                     (if (not (eq ?textura_primero ?textura_segundo)) then
                         (bind ?cohesion_12 (+ ?cohesion_12 1)) ; ++cohesion_menu básicamente
-                        ;(printout t "El plato " (instance-name (send ?primero get-plato)) " tiene textura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 12: " ?cohesion_12 crlf)
                     )
 
                     ; Si la temperatura entre el primero y el segundo es distinta sumar 1 a la cohesión del menú
@@ -1091,7 +1058,6 @@
 
                     (if (not (eq ?es_caliente_primero ?es_caliente_segundo)) then
                         (bind ?cohesion_12 (+ ?cohesion_12 1)) ; ++cohesion_menu
-                        ;(printout t "El plato " (instance-name (send ?primero get-plato)) " tiene temperatura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 12: " ?cohesion_12 crlf)
                     )
 
 
@@ -1102,7 +1068,6 @@
                     (progn$ (?estilo $?estilos_primero)
                         (if (member ?estilo $?estilos_segundo) then
                             (bind ?cohesion_12 (+ ?cohesion_12 1)) ; ++cohesion_menu
-                            ;(printout t "El plato " (instance-name (send ?primero get-plato)) " tiene estilo igual a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 12: " ?cohesion_12 crlf)
                             (break)
                         )
                     )
@@ -1118,12 +1083,10 @@
 
                             (if (not (eq ?textura_postre ?textura_segundo)) then
                                 (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu básicamente
-                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene textura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
                             )
 
                             (if (not (eq ?textura_postre ?textura_primero)) then
                                 (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
-                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene textura diferente a " (instance-name (send ?primero get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
                             )
 
                             ; Si la temperatura entre el postre y el segundo es distinta sumar 1 a la cohesión del menú
@@ -1133,12 +1096,10 @@
 
                             (if (not (eq ?es_caliente_postre ?es_caliente_segundo)) then
                                 (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
-                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene temperatura diferente a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
                             )
 
                             (if (not (eq ?es_caliente_postre ?es_caliente_primero)) then
                                 (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
-                                ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene temperatura diferente a " (instance-name (send ?primero get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
                             )
 
                             ; Si tienen un estilo que coincide
@@ -1149,7 +1110,6 @@
                             (progn$ (?estilo $?estilos_postre)
                                 (if (member ?estilo ?estilos_segundo) then
                                     (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
-                                    ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene estilo igual a " (instance-name (send ?segundo get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
                                     (break)
                                 )
                             )
@@ -1157,14 +1117,12 @@
                             (progn$ (?estilo $?estilos_postre)
                                 (if (member ?estilo ?estilos_primero) then
                                     (bind ?cohesion_23_y_31 (+ ?cohesion_23_y_31 1)) ; ++cohesion_menu
-                                    ;(printout t "El plato " (instance-name (send ?postre get-plato)) " tiene estilo igual a " (instance-name (send ?primero get-plato)) " ahora esta es la cohesion 2331: " ?cohesion_23_y_31 crlf)
                                     (break)
                                 )
                             )
 
                             (bind ?cohesion_menu (+ ?cohesion_12 ?cohesion_23_y_31))
 
-                            ;(printout t "Cohesion menu es " ?cohesion_menu crlf)
 
                             (assert (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu)))
                         )
@@ -1179,7 +1137,6 @@
     (declare (salience 12))
     ?fact <- (combinacionMenu (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu))
     =>
-    (printout t "comprobando incompatibilidades" crlf)
     ;para cada uno de los componentes del menú mirar si son incompatibles con alguno de los demás
     (assert (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu)))
     (retract ?fact);tanto si si como si no borramos la combinacion que acabamos de mirar
@@ -1190,7 +1147,6 @@
     ?lista_bebidas_candidatas <- (posiblesBebidas (bebidas $?bebidas))
     ?fact <- (combinacionMenuCompatible (primero ?primero) (segundo ?segundo) (postre ?postre) (cohesion ?cohesion_menu))
     =>
-        (printout t "Ahora comprobando bebidas" crlf)
     (progn$ (?bebida $?bebidas) ;NEW STUFF
         (bind ?bebida_compatible_primero FALSE)
         (bind ?bebida_compatible_segundo FALSE)
@@ -1242,7 +1198,6 @@
         )
 
         (if (and ?bebida_compatible_postre (and ?bebida_compatible_primero ?bebida_compatible_segundo)) then 
-            ;(printout t "Bebida " ?bebida " es compatible con " (send ?primero get-plato) "," (send ?segundo get-plato) " y " (send ?postre get-plato) "? " ?bebida_compatible_primero " /// ") ;DEBUG GIGANTE
             (assert (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida) (cohesion ?cohesion_menu)))
             )
         
@@ -1256,18 +1211,15 @@
     ?fact <- (menuCorrecto (primero ?primero) (segundo ?segundo) (postre ?postre) (bebida ?bebida) (cohesion ?cohesion_menu))
     (preferencias-del-cliente (precioMin ?precioMin) (precioMax ?precioMax))
     =>
-    (printout t "Comprobando precio" crlf)
     (bind ?precio_primero (send (send ?primero get-plato) get-Precio))
     (bind ?precio_segundo (send (send ?segundo get-plato) get-Precio))
     (bind ?precio_postre (send (send ?postre get-plato) get-Precio))
     (bind ?precio_bebida (send ?bebida get-Precio))
-    (printout t "PRECIO PRIMERO ---------- " ?precio_primero crlf)
 
     (bind ?precioTotal (+ ?precio_primero (+ ?precio_segundo (+ ?precio_postre ?precio_bebida))))
     
     ;mirar si entramos en presupuesto
     (if (and (>= ?precioTotal ?precioMin) (<= ?precioTotal ?precioMax)) then
-        (printout t "Menú dentro del rango de precio: " ?precioTotal " euros" crlf)
         (make-instance (gensym) of Menu 
             (Menu/plato_bebida ?bebida)
             (Primero (send ?primero get-plato))
@@ -1277,7 +1229,6 @@
             (cohesion ?cohesion_menu)
         )
     else
-        (printout t "Menú fuera del rango de precio: " ?precioTotal " euros (rango: " ?precioMin "-" ?precioMax ")" crlf)
     )
 
     (retract ?fact)
@@ -1295,8 +1246,6 @@
     (printout t "Los menus resultantes son los siguientes:" crlf)
     (bind $?todos_los_menus (find-all-instances ((?menu Menu)) TRUE))
     
-    ;(printout t "Este es mi precio minimo " ?precioMin " y mi maximo " ?precioMax)
-
     (if (eq (length$ $?todos_los_menus) 0)
         then
         (printout t "No se encontraron menús que cumplan los criterios." crlf)
@@ -1318,7 +1267,6 @@
 
         (bind ?precio_intermedio1 (+ ?precioMin ?intervalo))
         (bind ?precio_intermedio2 (+ ?precio_intermedio1 ?intervalo))
-        (printout t "precio inter 1 " ?precio_intermedio1 " y el 2 " ?precio_intermedio2 crlf)
     )
 
 
@@ -1347,7 +1295,6 @@
     
     (bind ?cohesion_buscada 9)
     (while (>= ?cohesion_buscada 0) do ; uso un while porque con el loop for count no puedes decrementar, sus muertos
-        ;(printout t "cohesion buscada: " ?cohesion_buscada crlf)
         (bind $?menus_con_cohesion_actual (create$))
 
         (loop-for-count (?idx_menu 1 (length$ $?todos_los_menus)) do
@@ -1387,11 +1334,8 @@
                     (bind ?segundo_act (send ?menu_actual get-Segundo))
                     (bind ?postre_act (send ?menu_actual get-Postre))
 
-                    ;(printout t "AAAAAJJ " crlf)
 
-                    ;(printout t "PRIMERO ACTUAL " ?primero_act " Y EL PRIMERO 1 " ?primero1 crlf)
-                    ;(printout t "SEGUNDO ACTUAL " ?segundo_act " Y EL SEGUNDO 1 " ?segundo1 crlf)
-                    ;(printout t "POSTRE ACTUAL " ?postre_act " Y EL POSTRE 1 " ?postre1 crlf)
+
                     
                     (bind ?num_diferencias 0)
 
@@ -1402,7 +1346,6 @@
                     (if (eq ?num_diferencias 3) then
                         (bind ?menu2_distinto_a_1 TRUE)
 
-                        ;(printout t "ACTUAL Y SEGUNDO SON DISTINTOS" crlf)
 
                         (bind ?menu_2 ?menu_actual)
                         (bind ?primero2 (send ?menu_2 get-Primero))
@@ -1418,9 +1361,7 @@
                     (bind ?segundo_act (send ?menu_actual get-Segundo))
                     (bind ?postre_act (send ?menu_actual get-Postre))
 
-                    (printout t "PRIMERO ACTUAL " ?primero_act " Y EL PRIMERO 2 " ?primero2 crlf)
-                    (printout t "SEGUNDO ACTUAL " ?segundo_act " Y EL SEGUNDO 2 " ?segundo2 crlf)
-                    (printout t "POSTRE ACTUAL " ?postre_act " Y EL POSTRE 2 " ?postre2 crlf)
+
                     
                     
                     (bind ?num_diferencias 0)
@@ -1429,11 +1370,11 @@
                     (if (not (eq ?segundo_act ?segundo2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
                     (if (not (eq ?postre_act ?postre2)) then (bind ?num_diferencias (+ ?num_diferencias 1)))
 
-                    (printout t ?num_diferencias crlf)
+
 
                     (if (eq ?num_diferencias 3) then
 
-                        (printout t "ACTUAL Y SEGUNDO SON DISTINTOS" crlf)
+
                     
                         (bind ?menu3_distinto_a_2 TRUE)
 
