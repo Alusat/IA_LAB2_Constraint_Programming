@@ -812,6 +812,7 @@
     (retract ?fact)
 )
 
+;(bind ?minGlobal 0)
 (defrule obtener_informacion::preguntar_setMinPrecio "Establece el minimo precio por menu del evento preguntandolo al usuario"
     (declare (salience 7))
     ?preferencias <- (preferencias-del-cliente (precioMax ?precioMax))
@@ -826,6 +827,7 @@
 				(printout t "El precio minimo ha de ser menor o igual al precio maximo escogido (" ?precioMax ")" crlf)
 			else 
 				(modify ?preferencias (precioMin ?min))
+                ;(bind ?minGlobal 0)
 				(bind ?finish TRUE)
             )
 		else
@@ -1221,9 +1223,12 @@
 )
 
 (defrule mostrar_soluciones::imprimir_menus "Imprime las soluciones encontradas"
+    (preferencias-del-cliente (precioMax ?precioMax) (precioMin ?precioMin))
     =>
     (printout t "Los menus resultantes son los siguientes:" crlf)
     (bind $?todos_los_menus (find-all-instances ((?menu Menu)) TRUE))
+    
+    ;(printout t "Este es mi precio minimo " ?precioMin " y mi maximo " ?precioMax)
 
     (if (eq (length$ $?todos_los_menus) 0)
         then
@@ -1231,9 +1236,33 @@
         (return)
     )
 
-    (bind ?menu_barato nil) ; <20 euros
-    (bind ?menu_medio nil) ; 20-30 euros
-    (bind ?menu_caro nil) ; >30 euros
+    (bind ?intervalo 0)
+    (bind ?precio_intermedio1 0)
+    (bind ?precio_intermedio2 0)
+    (bind ?diferencia (- ?precioMax ?precioMin))
+    
+    (if (> ?diferencia 30) then ; diferencia como máximo 10, que si no puedes poner min 1 y max 10000 no creamos menus de + de 50 euros
+        (bind ?diferencia 10)
+    )
+
+    (if (>= ?diferencia 3) then
+        
+        (bind ?intervalo (/ ?diferencia 3))
+
+        (bind ?precio_intermedio1 (+ ?precioMin ?intervalo))
+        (bind ?precio_intermedio2 (+ ?precio_intermedio1 ?intervalo))
+        (printout t "precio inter 1 " ?precio_intermedio1 " y el 2 " ?precio_intermedio2 crlf)
+    )
+
+
+    (bind ?menu_barato nil) 
+    (bind ?menu_medio nil) 
+    (bind ?menu_caro nil)
+
+    (bind ?menu_1 nil)  ; SI NO ENCUENTRO MENU BARATO MEDIO Y CARO
+    (bind ?menu_2 nil) 
+    (bind ?menu_3 nil)
+
     
     (bind ?cohesion_buscada 9)
     (while (>= ?cohesion_buscada 0) do ; uso un while porque con el loop for count no puedes decrementar, sus muertos
@@ -1249,18 +1278,35 @@
 
                 (bind ?precio_del_menu (send ?menu_actual get-Precio))
                 
-                (if (and (eq ?menu_barato nil) (<= ?precio_del_menu 20)) then
-                    (bind ?menu_barato ?menu_actual)
-                
-                else 
-                    (if (and (eq ?menu_caro nil) (>= ?precio_del_menu 30)) then
+                (if (and (eq ?menu_3 nil) (not (eq ?menu_2 nil))) then
+                    (bind ?menu_3 ?menu_actual)
+                )
+
+                (if (and (eq ?menu_2 nil) (not (eq ?menu_1 nil))) then
+                    (bind ?menu_2 ?menu_actual)
+                )
+
+                (if (eq ?menu_1 nil) then
+                    (bind ?menu_1 ?menu_actual)
+                )
+                                
+                ; ASIGNAMOS MENU BARATO MEDIO Y CARO
+                (if (not (eq ?intervalo 0)) then 
+                    (if (and (eq ?menu_caro nil) (> ?precio_del_menu ?precio_intermedio2)) then
                         (bind ?menu_caro ?menu_actual)
-                    else
-                        (if (eq ?menu_medio nil) then
-                            (bind ?menu_medio ?menu_actual) ; entre 20 y 30
+                    
+                    else 
+                        (if (and (eq ?menu_medio nil) (<= ?precio_del_menu ?precio_intermedio1)) then
+                            (bind ?menu_medio ?menu_actual)
+                        else
+                            (if (eq ?menu_barato nil) then
+                                (bind ?menu_barato ?menu_actual) 
+                            )
                         )
                     )
                 )
+                    
+        
 
                 (if (not (or (eq ?menu_barato nil) (eq ?menu_medio nil) (eq ?menu_caro nil))) then (break) )
             )
@@ -1270,10 +1316,15 @@
         
     )
 
-
-    (imprimir_menu ?menu_barato "Barato")
-    (imprimir_menu ?menu_medio "Medio")
-    (imprimir_menu ?menu_caro "Caro")
+    (if (or (eq ?menu_barato nil) (eq ?menu_caro nil) (eq ?menu_medio nil) ) then
+       (imprimir_menu ?menu_1 "1")
+        (imprimir_menu ?menu_2 "2") ; no he encontrado menus en los 3 rangos
+        (imprimir_menu ?menu_3 "3")
+    else
+        (imprimir_menu ?menu_barato "Barato")
+        (imprimir_menu ?menu_medio "Medio")
+        (imprimir_menu ?menu_caro "Caro")
+    )
 
 
     ; (loop-for-count (?i 1 (length$ $?menus_maxima_cohesion_encontrada)) do
