@@ -563,13 +563,15 @@
 )
 
 ;HEYNAU
-(deffunction MAIN::imprimir_menu (?menu_actual ?i)
+(deffunction MAIN::imprimir_menu (?menu_actual ?i ?nComensales)
     (bind ?bebidas (send ?menu_actual get-Menu/plato_bebida))
     (bind $?primeros (send ?menu_actual get-Primero))
     (bind $?segundos (send ?menu_actual get-Segundo))
     (bind $?postres (send ?menu_actual get-Postre))
     (bind ?precio (send ?menu_actual get-Precio))
     (bind ?cohesion (send ?menu_actual get-cohesion))
+
+    (bind ?precioTotal (* ?precio ?nComensales))
 
     (printout t crlf "--- MENU " ?i " ---" crlf)
     (if (> (length$ $?bebidas) 0)
@@ -594,6 +596,8 @@
     )
     (printout t "Precio: " ?precio " euros" crlf)
     (printout t "Cohesion: " ?cohesion crlf)
+    (printout t "-------------------" crlf)
+    (printout t "Precio Total: " ?precioTotal " euros" crlf)
     (printout t "-------------------" crlf)
 )
 
@@ -1223,7 +1227,7 @@
 )
 
 (defrule mostrar_soluciones::imprimir_menus "Imprime las soluciones encontradas"
-    (preferencias-del-cliente (precioMax ?precioMax) (precioMin ?precioMin))
+    (preferencias-del-cliente (precioMax ?precioMax) (precioMin ?precioMin) (numeroComensales ?nComensales))
     =>
     (printout t "Los menus resultantes son los siguientes:" crlf)
     (bind $?todos_los_menus (find-all-instances ((?menu Menu)) TRUE))
@@ -1317,13 +1321,13 @@
     )
 
     (if (or (eq ?menu_barato nil) (eq ?menu_caro nil) (eq ?menu_medio nil) ) then
-       (imprimir_menu ?menu_1 "1")
-        (imprimir_menu ?menu_2 "2") ; no he encontrado menus en los 3 rangos
-        (imprimir_menu ?menu_3 "3")
+       (imprimir_menu ?menu_1 "1" ?nComensales)
+        (imprimir_menu ?menu_2 "2" ?nComensales) ; no he encontrado menus en los 3 rangos
+        (imprimir_menu ?menu_3 "3" ?nComensales)
     else
-        (imprimir_menu ?menu_barato "Barato")
-        (imprimir_menu ?menu_medio "Medio")
-        (imprimir_menu ?menu_caro "Caro")
+        (imprimir_menu ?menu_barato "Barato" ?nComensales)
+        (imprimir_menu ?menu_medio "Medio" ?nComensales)
+        (imprimir_menu ?menu_caro "Caro" ?nComensales)
     )
 
 
