@@ -624,7 +624,7 @@
     )
 
     ([Paella_marinera_6] of Plato
-        (Plato_ingrediente [Marisco] [Calamar] [Azafrán] [Gamba])
+        (Plato_ingrediente [Marisco] [Azafrán] [Gamba])
         (Precio 28)
         (Complejo? FALSE)
         (Textura CRUJIENTE)
@@ -810,7 +810,7 @@
     )
 
     ([Paella_marinera_22] of Plato
-        (Plato_ingrediente [Marisco] [Calamar] [Arroz])
+        (Plato_ingrediente [Marisco] [Arroz])
         (Precio 36)
         (Complejo? FALSE)
         (Textura CRUJIENTE)
@@ -1043,7 +1043,7 @@
     )
 
     ([Tiramisú_42] of Plato
-        (Plato_ingrediente [Mascarpone] [Bizcochos] [Huevo] [Cacao] [Café])
+        (Plato_ingrediente [Mascarpone] [Huevo] [Cacao])
         (Precio 38)
         (Complejo? FALSE)
         (Textura CRUJIENTE)
@@ -1253,7 +1253,7 @@
     )
 
     ([Tiramisú_60] of Plato
-        (Plato_ingrediente [Bizcochos] [Cacao] [Mascarpone] [Huevo] [Café])
+        (Plato_ingrediente  [Cacao] [Mascarpone] [Huevo])
         (Precio 12)
         (Complejo? TRUE)
         (Textura CRUJIENTE)
@@ -1336,7 +1336,7 @@
     )
 
     ([Tiramisú_67] of Plato
-        (Plato_ingrediente [Cacao] [Café] [Huevo] [Bizcochos])
+        (Plato_ingrediente [Cacao] [Huevo] )
         (Precio 9)
         (Complejo? TRUE)
         (Textura CREMOSO)
@@ -1348,7 +1348,7 @@
     )
 
     ([Tiramisú_68] of Plato
-        (Plato_ingrediente [Mascarpone] [Cacao] [Café] [Huevo])
+        (Plato_ingrediente [Mascarpone] [Cacao] [Huevo])
         (Precio 8)
         (Complejo? FALSE)
         (Textura CRUJIENTE)
@@ -1556,7 +1556,7 @@
     )
 
     ([Paella_marinera_86] of Plato
-        (Plato_ingrediente [Arroz] [Marisco] [Calamar] [Azafrán] [Pimiento])
+        (Plato_ingrediente [Arroz] [Marisco] [Azafrán] [Pimiento])
         (Precio 22)
         (Complejo? FALSE)
         (Textura CRUJIENTE)
@@ -1615,7 +1615,7 @@
     )
 
     ([Paella_marinera_91] of Plato
-        (Plato_ingrediente [Marisco] [Gamba] [Calamar])
+        (Plato_ingrediente [Marisco] [Gamba] )
         (Precio 24)
         (Complejo? TRUE)
         (Textura CRUJIENTE)
