@@ -51,14 +51,6 @@
                                                          rdfs:label "Es_de_estilo"@es .
 
 
-###  http://webprotege.stanford.edu/R7XIg7XhzElWNh3iKJweapP
-<http://webprotege.stanford.edu/R7XIg7XhzElWNh3iKJweapP> rdf:type owl:ObjectProperty ;
-                                                         rdfs:subPropertyOf owl:topObjectProperty ;
-                                                         rdfs:domain <http://webprotege.stanford.edu/R9V0EAtH0etjKRalQAfio8Q> ;
-                                                         rdfs:range <http://webprotege.stanford.edu/R8VRY3mtaBNOBCiKNPiPYvS> ;
-                                                         rdfs:label "Es_evento_de_tipo"@es .
-
-
 ###  http://webprotege.stanford.edu/R7u357M7040WpCpYCTREobp
 <http://webprotege.stanford.edu/R7u357M7040WpCpYCTREobp> rdf:type owl:ObjectProperty ;
                                                          rdfs:subPropertyOf owl:topObjectProperty ;
@@ -75,6 +67,14 @@
                                                          rdfs:domain <http://webprotege.stanford.edu/R9V0EAtH0etjKRalQAfio8Q> ;
                                                          rdfs:range <http://webprotege.stanford.edu/R9Cs8m4Oijy0yKmf7sBkaX3> ;
                                                          rdfs:label "Ocurre_en_epoca"@es .
+
+
+###  http://webprotege.stanford.edu/R8mMM0PrFIK47MuRAjvubbD
+<http://webprotege.stanford.edu/R8mMM0PrFIK47MuRAjvubbD> rdf:type owl:ObjectProperty ;
+                                                         rdfs:subPropertyOf owl:topObjectProperty ;
+                                                         rdfs:domain <http://webprotege.stanford.edu/RKwYeQBHV2XR9wsegdhM0P> ;
+                                                         rdfs:range <http://webprotege.stanford.edu/R9m6zJi2pALJN9C3DQOwXr4> ;
+                                                         rdfs:label "Conjunta_con_estilo"@es .
 
 
 ###  http://webprotege.stanford.edu/R92YPyQKzK5cZQhk08aMQWT
@@ -157,6 +157,14 @@
                                                          rdfs:label "Complejo?"@es .
 
 
+###  http://webprotege.stanford.edu/RB9eanuC7fX5y2VFdtKoN2A
+<http://webprotege.stanford.edu/RB9eanuC7fX5y2VFdtKoN2A> rdf:type owl:DatatypeProperty ;
+                                                         rdfs:subPropertyOf owl:topDataProperty ;
+                                                         rdf:type owl:FunctionalProperty ;
+                                                         rdfs:domain <http://webprotege.stanford.edu/RC1UP3dXwxUGko68HxWP6DT> ;
+                                                         rdfs:label "Textura"@es .
+
+
 ###  http://webprotege.stanford.edu/RDCdwiBbTqaHes6QUhdwZe9
 <http://webprotege.stanford.edu/RDCdwiBbTqaHes6QUhdwZe9> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
@@ -164,6 +172,13 @@
                                                          rdfs:domain <http://webprotege.stanford.edu/RKwYeQBHV2XR9wsegdhM0P> ;
                                                          rdfs:range xsd:boolean ;
                                                          rdfs:label "Alcohol?"@es .
+
+
+###  http://webprotege.stanford.edu/RDIAkxwFmHtNEpWMKeetbLT
+<http://webprotege.stanford.edu/RDIAkxwFmHtNEpWMKeetbLT> rdf:type owl:DatatypeProperty ;
+                                                         rdfs:subPropertyOf owl:topDataProperty ;
+                                                         rdfs:domain <http://webprotege.stanford.edu/R9GmRSCon13uQKW1TKPJnjF> ;
+                                                         rdfs:label "Cohesion"@es .
 
 
 ###  http://webprotege.stanford.edu/RDytLhlswjbSKZ0mrcH0Nvb
@@ -181,6 +196,15 @@
                                                         rdfs:domain <http://webprotege.stanford.edu/RC1UP3dXwxUGko68HxWP6DT> ;
                                                         rdfs:range xsd:boolean ;
                                                         rdfs:label "Caliente?"@es .
+
+
+###  http://webprotege.stanford.edu/RR9QfARjOxbhqAOvsYSfev
+<http://webprotege.stanford.edu/RR9QfARjOxbhqAOvsYSfev> rdf:type owl:DatatypeProperty ;
+                                                        rdfs:subPropertyOf owl:topDataProperty ;
+                                                        rdf:type owl:FunctionalProperty ;
+                                                        rdfs:domain <http://webprotege.stanford.edu/RC1UP3dXwxUGko68HxWP6DT> ;
+                                                        rdfs:range xsd:int ;
+                                                        rdfs:label "Posicion_menu"@es .
 
 
 #################################################################
